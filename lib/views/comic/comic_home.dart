@@ -1,3 +1,4 @@
+import 'package:dm_project/views/widgets/home_view_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          pinned: true,
+          floating: true,
           elevation: 0,
           backgroundColor: Colors.transparent,
           toolbarHeight: kToolbarHeight + 16,
@@ -52,30 +53,8 @@ class ComicHomeViewState extends State<ComicHomeView> {
         SliverToBoxAdapter(
           child: Container(
             height: 3 * kToolbarHeight,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 6,
-              itemBuilder: (context, i) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                    height: 3 * kToolbarHeight,
-                    width: 5 * kToolbarHeight,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [Colors.white, Colors.grey[300]],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 12,
-                              offset: Offset(4, 4))
-                        ]),
-                  ),
-                );
-              },
+            child: RecommendList(
+              api: 'api',
             ),
           ),
         ),

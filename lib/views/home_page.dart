@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:dm_project/views/comic/comic_home.dart';
 import 'package:dm_project/views/novel/novel_home.dart';
 import 'package:flutter/material.dart';
