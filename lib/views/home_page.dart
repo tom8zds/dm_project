@@ -1,5 +1,6 @@
 import 'package:dm_project/views/comic/comic_home.dart';
 import 'package:dm_project/views/novel/novel_home.dart';
+import 'package:dm_project/views/setting/setting_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePageView extends StatefulWidget {
@@ -18,6 +19,7 @@ class HomePageViewState extends State<HomePageView> {
         children: [
           ComicHomeView(),
           NovelHomeView(),
+          SettingPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
