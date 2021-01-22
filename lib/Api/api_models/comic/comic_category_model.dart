@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'comic_state_model.dart';
+import 'comic_tag_model.dart';
+
 List<ComicCategoryFilter> comicCategoryFilterFromMap(String str) =>
     List<ComicCategoryFilter>.from(
         json.decode(str).map((x) => ComicCategoryFilter.fromMap(x)));
@@ -19,32 +22,13 @@ class ComicCategoryFilter {
   factory ComicCategoryFilter.fromMap(Map<String, dynamic> json) =>
       ComicCategoryFilter(
         title: json["title"],
-        items: List<FilterTag>.from(json["items"].map((x) => FilterTag.fromMap(x))),
+        items: List<FilterTag>.from(
+            json["items"].map((x) => FilterTag.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
         "title": title,
         "items": List<dynamic>.from(items.map((x) => x.toMap())),
-      };
-}
-
-class FilterTag {
-  FilterTag({
-    this.tagId,
-    this.tagName,
-  });
-
-  final int tagId;
-  final String tagName;
-
-  factory FilterTag.fromMap(Map<String, dynamic> json) => FilterTag(
-        tagId: json["tag_id"],
-        tagName: json["tag_name"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "tag_id": tagId,
-        "tag_name": tagName,
       };
 }
 
@@ -98,22 +82,4 @@ class ComicCategoryItem {
         "last_updatetime": lastUpdatetime,
         "num": num,
       };
-}
-
-enum Status { EMPTY, STATUS }
-
-final statusValues = EnumValues({"连载中": Status.EMPTY, "已完结": Status.STATUS});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
-  }
 }

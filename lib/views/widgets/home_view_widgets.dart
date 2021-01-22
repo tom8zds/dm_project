@@ -1,7 +1,8 @@
 import 'package:dm_project/Api/api.dart';
-import 'package:dm_project/Api/api_models/comic/comic_home_api.dart';
+import 'package:dm_project/Api/api_models/comic/comic_home_model.dart';
 import 'package:dm_project/views/widgets/utils_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RecommendListWidget extends StatelessWidget {
   final RecommendList list;
@@ -42,10 +43,16 @@ class RecommendListWidget extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
-              title: Text(
-                title,
-                style: Theme.of(context).textTheme.headline6,
-              ),
+              title: title == null
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.grey[300],
+                      highlightColor: Colors.grey[100],
+                      child: SizedBox(height: 18, width: 3 * kToolbarHeight),
+                    )
+                  : Text(
+                      title,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
               trailing: trailing,
             ),
             createList(margin, context),
@@ -67,28 +74,16 @@ class RecommendListWidget extends StatelessWidget {
             return coverButton(itemHeight, itemWidth, margin, context, state,
                 null, null, null, onTap);
           }
-          if (list.data[i].subTitle.isEmpty)
-            return coverButton(
-                itemHeight,
-                itemWidth,
-                margin,
-                context,
-                state,
-                list?.data[i]?.title,
-                list?.data[i]?.authors,
-                list?.data[i]?.cover,
-                onTap);
-          else
-            return coverButton(
-                itemHeight,
-                itemWidth,
-                margin,
-                context,
-                state,
-                list?.data[i]?.title,
-                list?.data[i]?.subTitle,
-                list?.data[i]?.cover,
-                onTap);
+          return coverButton(
+              itemHeight,
+              itemWidth,
+              margin,
+              context,
+              state,
+              list?.data[i]?.title ?? list.data[i].status,
+              list?.data[i]?.subTitle ?? list?.data[i]?.authors,
+              list?.data[i]?.cover,
+              onTap);
         },
       ),
     );

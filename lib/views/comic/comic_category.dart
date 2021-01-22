@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dm_project/Api/api.dart';
-import 'package:dm_project/Api/api_models/comic/comic_category_api.dart';
+import 'package:dm_project/Api/api_models/comic/comic_category_model.dart';
+import 'package:dm_project/Api/api_models/comic/comic_tag_model.dart';
 import 'package:dm_project/views/widgets/error_widget.dart';
 import 'package:dm_project/views/widgets/utils_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +34,13 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
   }
 
   @override
+  void dispose() {
+    pageStateController.close();
+    refreshController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +62,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
             onTap: () {
               setState(() {
                 orderType = (orderType + 1) % 2;
-                getComicCategoryData();
+                refreshController.requestRefresh();
               });
             },
             child: Padding(
@@ -132,7 +140,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
               ),
             );
           }
-          return Container();
+          return LinearProgressIndicator();
         },
       ),
       floatingActionButton: FloatingActionButton(

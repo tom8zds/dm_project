@@ -17,6 +17,9 @@ class Api {
   //漫画主页
   static String get comicHome =>
       '$apiHost/recommend_new_game.json?$defaultParameter';
+  //小说主页
+  static String get novelHome =>
+      '$apiHost/novel/recommend.json?$defaultParameter';
 
   //漫画分类过滤器
   static String get comicCatagoryFilter =>
@@ -34,13 +37,24 @@ class Api {
       param = '0';
     else
       param = param.substring(0, param.length - 1);
-    print('$apiHost/classify/$param/$orderType/$page.json?$defaultParameter');
     return '$apiHost/classify/$param/$orderType/$page.json?$defaultParameter';
   }
 
   //漫画排行过滤器
   static String get comicRankFilter =>
       '$apiHost/rank/type_filter.json?$defaultParameter';
+
+  //漫画排行 分类/时间/排序/页
+  static String comicRank(int tag, int timeRage, int orderType, int page) {
+    String api;
+    if (orderType == 0) {
+      api =
+          '$apiHost/rank/$tag/$timeRage/$orderType/$page.json?$defaultParameter';
+    } else {
+      api = '$apiHost/rank/0/$timeRage/$orderType/$page.json?$defaultParameter';
+    }
+    return api;
+  }
 
   static String get defaultParameter =>
       "channel=$channel&version$version&timestamp=$timeStamp&_debug=$_debug&app_channel=$appChannel";

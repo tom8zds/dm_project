@@ -1,9 +1,12 @@
 import 'dart:convert';
 
-List<RecommendList> comicHomeAPIFromMap(String str) => List<RecommendList>.from(
-    json.decode(str).map((x) => RecommendList.fromMap(x)));
+import 'comic_state_model.dart';
 
-String comicHomeAPIToMap(List<RecommendList> data) =>
+List<RecommendList> recommendListFromMap(String str) =>
+    List<RecommendList>.from(
+        json.decode(str).map((x) => RecommendList.fromMap(x)));
+
+String recommendListToMap(List<RecommendList> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
 class RecommendList {
@@ -23,7 +26,8 @@ class RecommendList {
         categoryId: json["category_id"],
         title: json["title"],
         sort: json["sort"],
-        data: List<RecommendListItem>.from(json["data"].map((x) => RecommendListItem.fromMap(x))),
+        data: List<RecommendListItem>.from(
+            json["data"].map((x) => RecommendListItem.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -59,8 +63,9 @@ class RecommendListItem {
   final int id;
   final String authors;
 
-  factory RecommendListItem.fromMap(Map<String, dynamic> json) => RecommendListItem(
-        cover: json["cover"],
+  factory RecommendListItem.fromMap(Map<String, dynamic> json) =>
+      RecommendListItem(
+        cover: json["cover"].replaceFirst('http:', 'https:'),
         title: json["title"],
         subTitle: json["sub_title"] == null ? null : json["sub_title"],
         type: json["type"] == null ? null : json["type"],
@@ -84,23 +89,4 @@ class RecommendListItem {
         "id": id == null ? null : id,
         "authors": authors == null ? null : authors,
       };
-}
-
-enum Status { EMPTY, STATUS, PURPLE }
-
-final statusValues =
-    EnumValues({"": Status.EMPTY, "已完结": Status.PURPLE, "连载中": Status.STATUS});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
-  }
 }

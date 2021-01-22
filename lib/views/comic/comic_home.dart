@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:dm_project/Api/api.dart';
-import 'package:dm_project/Api/api_models/comic/comic_home_api.dart';
+import 'package:dm_project/Api/api_models/comic/comic_home_model.dart';
 import 'package:dm_project/views/comic/comic_category.dart';
+import 'package:dm_project/views/comic/comic_rank.dart';
 import 'package:dm_project/views/widgets/error_widget.dart';
 import 'package:dm_project/views/widgets/home_view_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -122,7 +123,14 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                     icon: Icon(Icons.category),
                                     label: Text('分类')),
                                 FlatButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ComicRankView()),
+                                      );
+                                    },
                                     icon: Icon(Icons.bar_chart),
                                     label: Text('排行')),
                                 FlatButton.icon(
@@ -139,7 +147,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                       delegate: SliverChildListDelegate([
                         //近期必看
                         RecommendListWidget(
-                          title: '近期必看',
+                          title: _list[1]?.title,
                           list: _list[1],
                           itemHeight: height,
                           itemWidth: height * 0.75,
@@ -153,7 +161,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //专题
                         RecommendListWidget(
-                          title: '火热专题',
+                          title: _list[3]?.title,
                           list: _list[3],
                           itemHeight: height,
                           itemWidth: height / 9 * 16,
@@ -167,7 +175,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //大师作品
                         RecommendListWidget(
-                          title: '大师级作者怎能不看',
+                          title: _list[4]?.title,
                           list: _list[4],
                           itemHeight: height,
                           itemWidth: height * 0.75,
@@ -181,7 +189,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //热门
                         RecommendListWidget(
-                          title: '热门连载',
+                          title: _list[7]?.title,
                           list: _list[7],
                           itemHeight: height,
                           itemWidth: height * 0.75,
@@ -195,7 +203,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //条漫
                         RecommendListWidget(
-                          title: '条漫专区',
+                          title: _list[8]?.title,
                           list: _list[8],
                           itemHeight: height,
                           itemWidth: height * 16 / 9,
@@ -209,7 +217,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //国漫
                         RecommendListWidget(
-                          title: '国漫也精彩',
+                          title: _list[5]?.title,
                           list: _list[5],
                           itemHeight: height,
                           itemWidth: height * 0.75,
@@ -223,7 +231,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         ),
                         //美漫
                         RecommendListWidget(
-                          title: '美漫大事件',
+                          title: _list[6]?.title,
                           list: _list[6],
                           itemHeight: height,
                           itemWidth: height * 16 / 9,
@@ -254,7 +262,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
           options: Options(responseType: ResponseType.plain));
 
       if (response.statusCode == 200) {
-        _list = comicHomeAPIFromMap(response.data);
+        _list = recommendListFromMap(response.data);
         refreshController.refreshCompleted();
         pageStateController.add(PageState.done);
       } else {
