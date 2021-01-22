@@ -14,12 +14,12 @@ class ComicCategoryFilter {
   });
 
   final String title;
-  final List<Item> items;
+  final List<FilterTag> items;
 
   factory ComicCategoryFilter.fromMap(Map<String, dynamic> json) =>
       ComicCategoryFilter(
         title: json["title"],
-        items: List<Item>.from(json["items"].map((x) => Item.fromMap(x))),
+        items: List<FilterTag>.from(json["items"].map((x) => FilterTag.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -28,8 +28,8 @@ class ComicCategoryFilter {
       };
 }
 
-class Item {
-  Item({
+class FilterTag {
+  FilterTag({
     this.tagId,
     this.tagName,
   });
@@ -37,7 +37,7 @@ class Item {
   final int tagId;
   final String tagName;
 
-  factory Item.fromMap(Map<String, dynamic> json) => Item(
+  factory FilterTag.fromMap(Map<String, dynamic> json) => FilterTag(
         tagId: json["tag_id"],
         tagName: json["tag_name"],
       );

@@ -27,6 +27,7 @@ dependencies:
 
   #刷新加载
   flutter_easyrefresh: ^2.1.8
+  pull_to_refresh: ^1.6.4
 
   #加载闪烁动画
   shimmer: ^1.1.2
@@ -34,6 +35,9 @@ dependencies:
   #网络请求
   dio: ^3.0.10
   cached_network_image: ^2.5.0
+
+  #选择器
+  flutter_material_pickers: ^1.9.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

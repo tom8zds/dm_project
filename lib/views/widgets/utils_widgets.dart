@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dm_project/Api/api.dart';
+import 'package:dm_project/Api/api_models/comic/comic_category_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:shimmer/shimmer.dart';
@@ -13,29 +14,6 @@ ClassicalHeader getClassicalHeader() {
     refreshedText: '加载完成',
     noMoreText: '到头了',
     infoText: '更新于 %T',
-  );
-}
-
-Widget createTagItem(
-    String text, int id, Function ontap, bool isSelected, int type) {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 4),
-    child: ButtonTheme(
-      minWidth: 20,
-      height: 32,
-      child: FlatButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        color: isSelected ? Colors.blue : Colors.transparent,
-        textColor: isSelected ? Colors.white : Colors.black,
-        //borderSide: BorderSide(color: Theme.of(context).accentColor),
-        child: Text(
-          text,
-        ),
-        onPressed: () {
-          ontap(type, id);
-        },
-      ),
-    ),
   );
 }
 
@@ -79,49 +57,51 @@ Widget coverButton(
             case PageState.done:
               return ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: FlatButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: onTap,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: CachedNetworkImageProvider(
-                            cover,
-                            headers: {"Referer": "http://www.dmzj.com/"},
-                          ),
-                        )),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                colors: [Colors.transparent, Colors.black87],
-                                begin: Alignment.center,
-                                end: Alignment.bottomCenter),
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: CachedNetworkImageProvider(
+                      cover,
+                      headers: {"Referer": "http://www.dmzj.com/"},
+                    ),
+                  )),
+                  child: FlatButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: onTap,
+                    child: Stack(
+                      children: [
+                        Container(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: [Colors.transparent, Colors.black87],
+                                  begin: Alignment.center,
+                                  end: Alignment.bottomCenter),
+                            ),
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ListTile(
-                          title: Text(
-                            title,
-                            style: TextStyle(color: Colors.white),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ListTile(
+                            title: Text(
+                              title,
+                              style: TextStyle(color: Colors.white),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: subTitle == null
+                                ? null
+                                : Text(
+                                    subTitle,
+                                    style: TextStyle(color: Colors.white54),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                           ),
-                          subtitle: subTitle == null
-                              ? null
-                              : Text(
-                                  subTitle,
-                                  style: TextStyle(color: Colors.white54),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );

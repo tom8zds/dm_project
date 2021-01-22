@@ -1,9 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dm_project/Api/api.dart';
 import 'package:dm_project/Api/api_models/comic/comic_home_api.dart';
 import 'package:dm_project/views/widgets/utils_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 class RecommendListWidget extends StatelessWidget {
   final RecommendList list;
@@ -65,6 +63,10 @@ class RecommendListWidget extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: list == null ? 3 : list.data.length,
         itemBuilder: (context, i) {
+          if (list == null) {
+            return coverButton(itemHeight, itemWidth, margin, context, state,
+                null, null, null, onTap);
+          }
           if (list.data[i].subTitle.isEmpty)
             return coverButton(
                 itemHeight,
@@ -72,9 +74,9 @@ class RecommendListWidget extends StatelessWidget {
                 margin,
                 context,
                 state,
-                list.data[i].title,
-                list.data[i].authors,
-                list.data[i].cover,
+                list?.data[i]?.title,
+                list?.data[i]?.authors,
+                list?.data[i]?.cover,
                 onTap);
           else
             return coverButton(
@@ -83,9 +85,9 @@ class RecommendListWidget extends StatelessWidget {
                 margin,
                 context,
                 state,
-                list.data[i].title,
-                list.data[i].subTitle,
-                list.data[i].cover,
+                list?.data[i]?.title,
+                list?.data[i]?.subTitle,
+                list?.data[i]?.cover,
                 onTap);
         },
       ),

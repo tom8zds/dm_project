@@ -23,7 +23,7 @@ class Api {
       '$apiHost/classify/filter.json?$defaultParameter';
 
   //漫画分类 分类-面向人群-连载状态-地域
-  static String comicCatagory(List<String> typeIds) {
+  static String comicCatagory(List<String> typeIds, int page, int orderType) {
     String param = '';
     typeIds.forEach((element) {
       if (element != '0') {
@@ -34,8 +34,8 @@ class Api {
       param = '0';
     else
       param = param.substring(0, param.length - 1);
-    print(param);
-    return '$apiHost/classify/$param/0/0.json?$defaultParameter';
+    print('$apiHost/classify/$param/$orderType/$page.json?$defaultParameter');
+    return '$apiHost/classify/$param/$orderType/$page.json?$defaultParameter';
   }
 
   //漫画排行过滤器
