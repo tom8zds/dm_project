@@ -1,21 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dm_project/Api/api.dart';
-import 'package:dm_project/Api/api_models/comic/comic_category_api.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
-ClassicalHeader getClassicalHeader() {
-  return ClassicalHeader(
-    refreshText: '下拉刷新',
-    refreshingText: '正在加载...',
-    refreshReadyText: '释放刷新',
-    refreshFailedText: '加载失败',
-    refreshedText: '加载完成',
-    noMoreText: '到头了',
-    infoText: '更新于 %T',
-  );
-}
 
 Widget coverButton(
     double itemHeight,
@@ -37,27 +23,27 @@ Widget coverButton(
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey,
+              color: Theme.of(context).shadowColor.withOpacity(0.38),
               blurRadius: margin / 2,
               offset: Offset(margin / 2, margin / 2),
             )
           ]),
       child: Center(
-        child: Builder(builder: (context) {
-          switch (state) {
-            case PageState.loading:
-              return Shimmer.fromColors(
-                  baseColor: Colors.grey[300],
-                  highlightColor: Colors.grey[100],
-                  child: Container(
-                    height: itemHeight,
-                    width: itemWidth,
-                    color: Colors.white,
-                  ));
-            case PageState.done:
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Builder(builder: (context) {
+            switch (state) {
+              case PageState.loading:
+                return Shimmer.fromColors(
+                    baseColor: Colors.grey[300],
+                    highlightColor: Colors.grey[100],
+                    child: Container(
+                      height: itemHeight,
+                      width: itemWidth,
+                      color: Colors.white,
+                    ));
+              case PageState.done:
+                return Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
                     fit: BoxFit.cover,
@@ -84,6 +70,7 @@ Widget coverButton(
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: ListTile(
+                            horizontalTitleGap: 0,
                             title: Text(
                               title,
                               style: TextStyle(color: Colors.white),
@@ -103,20 +90,20 @@ Widget coverButton(
                       ],
                     ),
                   ),
-                ),
-              );
-            case PageState.fail:
-              return Icon(
-                Icons.broken_image,
-                color: Theme.of(context).disabledColor,
-              );
-            default:
-              return Icon(
-                Icons.broken_image,
-                color: Theme.of(context).disabledColor,
-              );
-          }
-        }),
+                );
+              case PageState.fail:
+                return Icon(
+                  Icons.broken_image,
+                  color: Theme.of(context).disabledColor,
+                );
+              default:
+                return Icon(
+                  Icons.broken_image,
+                  color: Theme.of(context).disabledColor,
+                );
+            }
+          }),
+        ),
       ),
     ),
   );

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -9,9 +8,8 @@ import 'package:dm_project/views/widgets/error_widget.dart';
 import 'package:dm_project/views/widgets/utils_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ComicCategoryView extends StatefulWidget {
   @override
@@ -26,6 +24,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
   int orderType = 0;
 
   final StreamController pageStateController = StreamController<PageState>();
+  final RefreshController refreshController = RefreshController();
 
   @override
   void initState() {
@@ -36,6 +35,48 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 4,
+        automaticallyImplyLeading: false,
+        title: Text(
+          '分类',
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        actions: [
+          Center(
+            child: Text(
+              '排序:',
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                orderType = (orderType + 1) % 2;
+                getComicCategoryData();
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: AnimatedCrossFade(
+                  firstChild: Text(
+                    '人气',
+                    style: TextStyle(color: Theme.of(context).accentColor),
+                  ),
+                  secondChild: Text('更新',
+                      style: TextStyle(color: Theme.of(context).accentColor)),
+                  crossFadeState: orderType == 0
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  duration: Duration(milliseconds: 300),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: StreamBuilder(
         stream: pageStateController.stream,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -43,50 +84,52 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
             return errorPage(context, getComicCategoryData);
           }
           if (snapshot.hasData) {
-            double itemWidth = MediaQuery.of(context).size.width / 3;
+            double itemWidth = MediaQuery.of(context).size.shortestSide / 3;
             double itemHeight = itemWidth / 3 * 4;
             double margin = 8.0;
+            int onLineCount = MediaQuery.of(context).size.width ~/ itemWidth;
             return SafeArea(
-              child: EasyRefresh.custom(
-                  header: getClassicalHeader(),
-                  footer: MaterialFooter(),
-                  onRefresh: getComicCategoryData,
-                  onLoad: _dataList.isNotEmpty ? onLoad : null,
-                  slivers: [
-                    SliverAppBar(
-                      pinned: true,
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                      elevation: 4,
-                      automaticallyImplyLeading: false,
-                      title: Text(
-                        '分类',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                      bottom: PreferredSize(
-                        preferredSize: Size.fromHeight(kTextTabBarHeight),
-                        child: Row(
-                          children: bottomBar(),
-                        ),
+              child: SmartRefresher(
+                physics: BouncingScrollPhysics(),
+                enablePullUp: true,
+                onRefresh: getComicCategoryData,
+                onLoading: _dataList.isNotEmpty ? onLoad : null,
+                controller: refreshController,
+                child: CustomScrollView(slivers: [
+                  SliverAppBar(
+                    floating: true,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    elevation: 0,
+                    automaticallyImplyLeading: false,
+                    titleSpacing: 0,
+                    title: PreferredSize(
+                      preferredSize: Size.fromHeight(kTextTabBarHeight),
+                      child: Row(
+                        children: bottomBar(),
                       ),
                     ),
-                    SliverGrid(
-                      delegate: SliverChildBuilderDelegate((context, i) {
-                        return coverButton(
-                            itemHeight,
-                            itemWidth,
-                            margin,
-                            context,
-                            snapshot.data,
-                            _dataList?.elementAt(i)?.title,
-                            _dataList?.elementAt(i)?.authors,
-                            _dataList?.elementAt(i)?.cover,
-                            () {});
-                      }, childCount: _dataList == null ? 9 : _dataList.length),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 0.75, crossAxisCount: 3),
-                    )
-                  ]),
+                  ),
+                  SliverGrid(
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                      return coverButton(
+                          itemHeight,
+                          itemWidth,
+                          margin,
+                          context,
+                          snapshot.data,
+                          _dataList?.elementAt(i)?.title,
+                          _dataList?.elementAt(i)?.authors,
+                          _dataList?.elementAt(i)?.cover,
+                          () {});
+                    },
+                        childCount: _dataList == null
+                            ? 3 * onLineCount
+                            : _dataList.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 0.75, crossAxisCount: onLineCount),
+                  )
+                ]),
+              ),
             );
           }
           return Container();
@@ -109,6 +152,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
             child: InkWell(
               onTap: () {
                 showMaterialScrollPicker(
+                  showDivider: false,
                   context: context,
                   title: _filterList[i].title,
                   items: _filterList[i].items.map((e) => e.tagName).toList(),
@@ -120,7 +164,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                         .items
                         .firstWhere((element) => element.tagName == value);
                   },
-                  onConfirmed: getComicCategoryData,
+                  onConfirmed: refreshController.requestRefresh,
                 );
               },
               child: Column(
@@ -130,7 +174,10 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                     style: Theme.of(context).textTheme.caption,
                   ),
                   Text("${tagList[i].tagName}",
-                      style: Theme.of(context).textTheme.subtitle1)
+                      style: TextStyle(
+                          fontSize:
+                              Theme.of(context).textTheme.subtitle1.fontSize,
+                          color: Theme.of(context).accentColor))
                 ],
               ),
             ),
@@ -144,6 +191,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
 //Text("${_filterList[i].title}:\n${tagList[i].tagName}")
   Future onLoad() async {
     await getComicCategoryData(isRefresh: false);
+    refreshController.loadComplete();
   }
 
   Future getComicCategoryData({isRefresh = true}) async {
@@ -168,10 +216,12 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
         pageStateController.addError('statusCode:${response.statusCode}');
         pageStateController.add(PageState.fail);
       }
+      refreshController.refreshCompleted();
     } catch (e) {
       print(e);
       pageStateController.addError(e);
       pageStateController.add(PageState.fail);
+      refreshController.refreshFailed();
     }
   }
 
