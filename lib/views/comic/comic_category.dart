@@ -92,10 +92,16 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
             return errorPage(context, getComicCategoryData);
           }
           if (snapshot.hasData) {
-            double itemWidth = MediaQuery.of(context).size.shortestSide / 3;
-            double itemHeight = itemWidth / 3 * 4;
+            int oneLineCount =
+                (MediaQuery.of(context).size.width / 3 / kToolbarHeight)
+                    .round();
+            double itemWidth =
+                MediaQuery.of(context).size.shortestSide / oneLineCount;
+            double itemHeight = itemWidth / 0.75;
             double margin = 8.0;
-            int onLineCount = MediaQuery.of(context).size.width ~/ itemWidth;
+
+            print(
+                '$itemWidth $oneLineCount ${MediaQuery.of(context).size.width}');
             return SafeArea(
               child: SmartRefresher(
                 physics: BouncingScrollPhysics(),
@@ -131,10 +137,10 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                           () {});
                     },
                         childCount: _dataList == null
-                            ? 3 * onLineCount
+                            ? 3 * oneLineCount
                             : _dataList.length),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.75, crossAxisCount: onLineCount),
+                        childAspectRatio: 0.75, crossAxisCount: oneLineCount),
                   )
                 ]),
               ),

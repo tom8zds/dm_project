@@ -15,86 +15,71 @@ Widget coverButton(
         String subTitle,
         String cover,
         Function onTap) =>
-    Padding(
-      padding: EdgeInsets.all(margin),
+    InkWell(
+      onTap: onTap,
       child: Container(
+        padding: EdgeInsets.all(margin),
         height: itemHeight - 2 * margin,
         width: itemWidth - 2 * margin,
-        decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).shadowColor.withOpacity(0.38),
-                blurRadius: margin / 2,
-                offset: Offset(margin / 2, margin / 2),
-              )
-            ]),
-        child: Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(12),
+          child: Center(
             child: Builder(builder: (context) {
               switch (state) {
                 case PageState.loading:
                   return Shimmer.fromColors(
                       baseColor: Colors.grey[300],
                       highlightColor: Colors.grey[100],
-                      child: Container(
-                        height: itemHeight,
-                        width: itemWidth,
-                        color: Colors.white,
+                      child: Material(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(),
                       ));
                 case PageState.done:
-                  return Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: CachedNetworkImageProvider(
-                        cover,
-                        headers: headers,
-                      ),
-                    )),
-                    child: FlatButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: onTap,
-                      child: Stack(
-                        children: [
-                          Container(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black87
-                                    ],
-                                    begin: Alignment.center,
-                                    end: Alignment.bottomCenter),
+                  return Stack(
+                    children: [
+                      Container(
+                        foregroundDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                              colors: [Colors.transparent, Colors.black87],
+                              begin: Alignment.center,
+                              end: Alignment.bottomCenter),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                cover,
+                                headers: headers,
                               ),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: ListTile(
-                              horizontalTitleGap: 0,
-                              title: Text(
-                                title,
-                                style: TextStyle(color: Colors.white),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: subTitle == null
-                                  ? null
-                                  : Text(
-                                      subTitle,
-                                      style: TextStyle(color: Colors.white54),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ListTile(
+                          horizontalTitleGap: 0,
+                          title: Text(
+                            title,
+                            style: TextStyle(color: Colors.white),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: subTitle == null
+                              ? null
+                              : Text(
+                                  subTitle,
+                                  style: TextStyle(color: Colors.white54),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                        ),
+                      ),
+                    ],
                   );
                 case PageState.fail:
                   return Icon(
@@ -125,6 +110,7 @@ Widget coverButtonExtend(
   String updateTime = '',
   String updateChapter = '',
   String cover = '',
+  int order = -1,
 }) =>
     InkWell(
       onTap: onTap,
@@ -138,6 +124,17 @@ Widget coverButtonExtend(
                 case PageState.done:
                   return Row(
                     children: [
+                      order == -1
+                          ? Container()
+                          : Container(
+                              width: kToolbarHeight,
+                              child: Center(
+                                child: Text(
+                                  '$order',
+                                  style: Theme.of(context).textTheme.headline4,
+                                ),
+                              ),
+                            ),
                       Container(
                         width: itemHeight * 0.75 - 12,
                         decoration: BoxDecoration(

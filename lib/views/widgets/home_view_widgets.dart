@@ -66,6 +66,7 @@ class RecommendListWidget extends StatelessWidget {
     return Container(
       height: itemHeight,
       child: ListView.builder(
+        itemExtent: itemWidth,
         physics: BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: list == null ? 3 : list.data.length,

@@ -220,24 +220,26 @@ class ComicRankViewState extends State<ComicRankView> {
                     ),
                   ),
                   SliverFixedExtentList(
-                    delegate: SliverChildBuilderDelegate((context, i) {
-                      return coverButtonExtend(
-                        context,
-                        snapshot.data,
-                        () {},
-                        title: _dataList[i].title,
-                        authors: _dataList[i].authors,
-                        cover: _dataList[i].cover,
-                        types: _dataList[i].types,
-                        updateTime: _dataList[i].lastUpdatetime,
-                        updateChapter: _dataList[i].lastUpdateChapterName,
-                        margin: margin,
-                        itemHeight: itemHeight,
-                      );
-                    },
-                        childCount: _dataList == null
-                            ? shimmerCount
-                            : _dataList.length),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, i) {
+                        return coverButtonExtend(
+                          context,
+                          snapshot.data,
+                          () {},
+                          title: _dataList[i].title,
+                          authors: _dataList[i].authors,
+                          cover: _dataList[i].cover,
+                          types: _dataList[i].types,
+                          updateTime: _dataList[i].lastUpdatetime,
+                          updateChapter: _dataList[i].lastUpdateChapterName,
+                          margin: margin,
+                          itemHeight: itemHeight,
+                          order: i + 1,
+                        );
+                      },
+                      childCount:
+                          _dataList == null ? shimmerCount : _dataList.length,
+                    ),
                     itemExtent: 3 * kToolbarHeight,
                   )
                 ]),

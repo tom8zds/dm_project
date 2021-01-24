@@ -111,7 +111,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                             ),
                             ButtonBar(
                               children: [
-                                FlatButton.icon(
+                                TextButton.icon(
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -122,7 +122,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                     },
                                     icon: Icon(Icons.category),
                                     label: Text('分类')),
-                                FlatButton.icon(
+                                TextButton.icon(
                                     onPressed: () {
                                       Navigator.push(
                                         context,
@@ -133,7 +133,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                     },
                                     icon: Icon(Icons.bar_chart),
                                     label: Text('排行')),
-                                FlatButton.icon(
+                                TextButton.icon(
                                     onPressed: () {},
                                     icon: Icon(Icons.collections),
                                     label: Text('专题')),
