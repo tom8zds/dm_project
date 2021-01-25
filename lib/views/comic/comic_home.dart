@@ -5,6 +5,7 @@ import 'package:dm_project/Api/api.dart';
 import 'package:dm_project/Api/api_models/comic/comic_home_model.dart';
 import 'package:dm_project/views/comic/comic_category.dart';
 import 'package:dm_project/views/comic/comic_rank.dart';
+import 'package:dm_project/views/search_view.dart';
 import 'package:dm_project/views/widgets/error_widget.dart';
 import 'package:dm_project/views/widgets/home_view_widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,11 +55,12 @@ class ComicHomeViewState extends State<ComicHomeView> {
                       floating: true,
                       elevation: 0,
                       backgroundColor: Colors.transparent,
+                      toolbarHeight: kToolbarHeight,
                       title: Container(
                         height: kToolbarHeight - 8,
                         decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey,
@@ -76,10 +78,19 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                   ),
                                   onPressed: () {}),
                               Expanded(
-                                child: Container(),
+                                child: InkWell(
+                                  onTap: () {
+                                    showSearch(
+                                        context: context,
+                                        delegate: SearchBarDelegate());
+                                  },
+                                ),
                               ),
-                              CircleAvatar(
-                                child: Icon(Icons.perm_identity),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: CircleAvatar(
+                                  child: Icon(Icons.perm_identity),
+                                ),
                               ),
                             ],
                           ),

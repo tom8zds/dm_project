@@ -135,6 +135,9 @@ Widget coverButtonExtend(
                                 ),
                               ),
                             ),
+                      SizedBox(
+                        width: 8,
+                      ),
                       Container(
                         width: itemHeight * 0.75 - 12,
                         decoration: BoxDecoration(
