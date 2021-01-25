@@ -13,6 +13,12 @@ import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ComicCategoryView extends StatefulWidget {
+  final int orderType;
+  final int showType;
+
+  const ComicCategoryView({Key key, this.orderType = 0, this.showType = 0})
+      : super(key: key);
+
   @override
   State<StatefulWidget> createState() => ComicCategoryViewState();
 }
@@ -22,13 +28,16 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
   List<ComicCategoryFilter> _filterList;
   List<FilterTag> tagList = List.filled(4, null);
   int page = 0;
-  int orderType = 0;
+  int orderType;
+  int showType; //0: grid, 1:list
 
   final StreamController pageStateController = StreamController<PageState>();
   final RefreshController refreshController = RefreshController();
 
   @override
   void initState() {
+    orderType = widget.orderType;
+    showType = widget.showType;
     getComicCategoryFilter();
     super.initState();
   }
@@ -49,7 +58,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
         automaticallyImplyLeading: false,
         title: Text(
           '分类',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headline5,
         ),
         actions: [
           Center(
@@ -70,11 +79,37 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
               child: Center(
                 child: AnimatedCrossFade(
                   firstChild: Text(
-                    '人气',
+                    '人气排行',
                     style: TextStyle(color: Theme.of(context).accentColor),
                   ),
-                  secondChild: Text('更新',
+                  secondChild: Text('最近更新',
                       style: TextStyle(color: Theme.of(context).accentColor)),
+                  crossFadeState: orderType == 0
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  duration: Duration(milliseconds: 300),
+                ),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                showType = (showType + 1) % 2;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: AnimatedCrossFade(
+                  firstChild: Icon(
+                    Icons.grid_view,
+                    color: Theme.of(context).accentColor,
+                  ),
+                  secondChild: Icon(
+                    Icons.list,
+                    color: Theme.of(context).accentColor,
+                  ),
                   crossFadeState: orderType == 0
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
@@ -99,6 +134,12 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                 MediaQuery.of(context).size.shortestSide / oneLineCount;
             double itemHeight = itemWidth / 0.75;
             double margin = 8.0;
+            int shimmerCount = 6;
+            if (showType == 1) {
+              double listItemHeight = 3 * kToolbarHeight;
+              shimmerCount =
+                  MediaQuery.of(context).size.height ~/ listItemHeight;
+            }
 
             print(
                 '$itemWidth $oneLineCount ${MediaQuery.of(context).size.width}');
@@ -123,25 +164,49 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                       ),
                     ),
                   ),
-                  SliverGrid(
-                    delegate: SliverChildBuilderDelegate((context, i) {
-                      return coverButton(
-                          itemHeight,
-                          itemWidth,
-                          margin,
-                          context,
-                          snapshot.data,
-                          _dataList?.elementAt(i)?.title,
-                          _dataList?.elementAt(i)?.authors,
-                          _dataList?.elementAt(i)?.cover,
-                          () {});
-                    },
-                        childCount: _dataList == null
-                            ? 3 * oneLineCount
-                            : _dataList.length),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 0.75, crossAxisCount: oneLineCount),
-                  )
+                  showType == 0
+                      ? SliverGrid(
+                          delegate: SliverChildBuilderDelegate((context, i) {
+                            return coverButton(
+                                itemHeight,
+                                itemWidth,
+                                margin,
+                                context,
+                                snapshot.data,
+                                _dataList?.elementAt(i)?.title,
+                                _dataList?.elementAt(i)?.authors,
+                                _dataList?.elementAt(i)?.cover,
+                                () {});
+                          },
+                              childCount: _dataList == null
+                                  ? 3 * oneLineCount
+                                  : _dataList.length),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  childAspectRatio: 0.75,
+                                  crossAxisCount: oneLineCount),
+                        )
+                      : SliverFixedExtentList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) {
+                              return coverButtonExtend(
+                                context,
+                                snapshot.data,
+                                () {},
+                                title: _dataList[i].title,
+                                authors: _dataList[i].authors,
+                                cover: _dataList[i].cover,
+                                types: _dataList[i].types,
+                                margin: margin,
+                                itemHeight: itemHeight,
+                              );
+                            },
+                            childCount: _dataList == null
+                                ? shimmerCount
+                                : _dataList.length,
+                          ),
+                          itemExtent: 3 * kToolbarHeight,
+                        ),
                 ]),
               ),
             );

@@ -21,6 +21,10 @@ class Api {
   static String get novelHome =>
       '$apiHost/novel/recommend.json?$defaultParameter';
 
+  static String comicHot(int categoryId) {
+    return "$apiHost/recommend/batchUpdate?category_id=$categoryId&$defaultParameter";
+  }
+
   //漫画分类过滤器
   static String get comicCatagoryFilter =>
       '$apiHost/classify/filter.json?$defaultParameter';
@@ -54,6 +58,12 @@ class Api {
       api = '$apiHost/rank/0/$timeRage/$orderType/$page.json?$defaultParameter';
     }
     return api;
+  }
+
+  //用户相关
+  static get loginV2 => "https://user.dmzj1.com/loginV2/m_confirm";
+  static String userProfile(String uid, String token) {
+    return "$apiHost/UCenter/comicsv2/$uid.json?dmzj_token=$token&$defaultParameter";
   }
 
   static String get defaultParameter =>

@@ -51,7 +51,7 @@ class ComicRankViewState extends State<ComicRankView> {
         automaticallyImplyLeading: false,
         title: Text(
           '排行榜',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headline5,
         ),
       ),
       body: StreamBuilder(
@@ -149,12 +149,11 @@ class ComicRankViewState extends State<ComicRankView> {
                                       color: Theme.of(context).accentColor),
                                   onChanged: (value) {
                                     setState(() {
-                                      print(kMinInteractiveDimension);
                                       timeRange = value;
                                       refreshController.requestRefresh();
                                     });
                                   },
-                                  value: orderType,
+                                  value: timeRange,
                                   items: [
                                     DropdownMenuItem(
                                       value: 0,
@@ -193,7 +192,6 @@ class ComicRankViewState extends State<ComicRankView> {
                                       color: Theme.of(context).accentColor),
                                   onChanged: (value) {
                                     setState(() {
-                                      print(kMinInteractiveDimension);
                                       orderType = value;
                                       refreshController.requestRefresh();
                                     });
@@ -270,9 +268,6 @@ class ComicRankViewState extends State<ComicRankView> {
         pageStateController.add(PageState.loading);
       }
       var api = Api.comicRank(typeTag.tagId, timeRange, orderType, page);
-
-      print(api);
-      //await Future.delayed(Duration(seconds: 5));
 
       Response response = await Dio()
           .get(api, options: Options(responseType: ResponseType.plain));

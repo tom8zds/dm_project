@@ -20,8 +20,11 @@ class ComicHomeView extends StatefulWidget {
 class ComicHomeViewState extends State<ComicHomeView> {
   List<RecommendList> _list = List.filled(9, null);
 
-  final StreamController pageStateController = StreamController<PageState>();
+  final StreamController pageStateController =
+      StreamController<List<PageState>>();
   final RefreshController refreshController = RefreshController();
+  final List<PageState> _stateList =
+      List<PageState>.filled(4, PageState.loading);
 
   @override
   void initState() {
@@ -56,43 +59,34 @@ class ComicHomeViewState extends State<ComicHomeView> {
                       elevation: 0,
                       backgroundColor: Colors.transparent,
                       toolbarHeight: kToolbarHeight,
-                      title: Container(
-                        height: kToolbarHeight - 8,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 2,
-                              )
-                            ]),
+                      title: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(12),
                         child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                  icon: Icon(
-                                    Icons.search,
-                                    color: Colors.blue,
-                                  ),
-                                  onPressed: () {}),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () {
-                                    showSearch(
-                                        context: context,
-                                        delegate: SearchBarDelegate());
-                                  },
+                          height: kToolbarHeight - 8,
+                          padding: EdgeInsets.all(4),
+                          child: InkWell(
+                            onTap: () {
+                              showSearch(
+                                  context: context,
+                                  delegate: SearchBarDelegate());
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    icon: Icon(
+                                      Icons.search,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () {}),
+                                Expanded(
+                                  child: Container(),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: CircleAvatar(
+                                CircleAvatar(
                                   child: Icon(Icons.perm_identity),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -102,7 +96,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                         list: _list[0],
                         itemHeight: 3 * kToolbarHeight,
                         itemWidth: 16 / 3 * kToolbarHeight,
-                        state: snapShot.data,
+                        state: snapShot.data[0],
                       ),
                     ),
                     SliverToBoxAdapter(
@@ -116,7 +110,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
                                   '漫画',
-                                  style: Theme.of(context).textTheme.headline4,
+                                  style: Theme.of(context).textTheme.headline5,
                                 ),
                               ),
                             ),
@@ -167,7 +161,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(content: Text('onTap')));
                           },
-                          state: snapShot.data,
+                          state: snapShot.data[0],
                           hasListTile: true,
                         ),
                         //专题
@@ -181,7 +175,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(content: Text('onTap')));
                           },
-                          state: snapShot.data,
+                          state: snapShot.data[0],
                           hasListTile: true,
                         ),
                         //大师作品
@@ -190,12 +184,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           list: _list[4],
                           itemHeight: height,
                           itemWidth: height * 0.75,
-                          trailing: Icon(Icons.arrow_forward),
-                          onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
-                          },
-                          state: snapShot.data,
+                          state: snapShot.data[0],
                           hasListTile: true,
                         ),
                         //热门
@@ -204,12 +193,11 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           list: _list[7],
                           itemHeight: height,
                           itemWidth: height * 0.75,
-                          trailing: Icon(Icons.arrow_forward),
+                          trailing: Icon(Icons.refresh),
                           onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
+                            getBatchUpdate(_list[7].categoryId, 1, 7);
                           },
-                          state: snapShot.data,
+                          state: snapShot.data[1],
                           hasListTile: true,
                         ),
                         //条漫
@@ -218,12 +206,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           list: _list[8],
                           itemHeight: height,
                           itemWidth: height * 16 / 9,
-                          trailing: Icon(Icons.arrow_forward),
-                          onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
-                          },
-                          state: snapShot.data,
+                          state: snapShot.data[0],
                           hasListTile: true,
                         ),
                         //国漫
@@ -232,12 +215,11 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           list: _list[5],
                           itemHeight: height,
                           itemWidth: height * 0.75,
-                          trailing: Icon(Icons.arrow_forward),
+                          trailing: Icon(Icons.refresh),
                           onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
+                            getBatchUpdate(_list[5].categoryId, 2, 5);
                           },
-                          state: snapShot.data,
+                          state: snapShot.data[2],
                           hasListTile: true,
                         ),
                         //美漫
@@ -246,12 +228,28 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           list: _list[6],
                           itemHeight: height,
                           itemWidth: height * 16 / 9,
+                          onTap: null,
+                          state: snapShot.data[0],
+                          hasListTile: true,
+                        ),
+                        //最新上架
+                        RecommendListWidget(
+                          title: _list[9]?.title,
+                          list: _list[9],
+                          itemHeight: height,
+                          itemWidth: height * 0.75,
                           trailing: Icon(Icons.arrow_forward),
                           onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ComicCategoryView(
+                                        orderType: 1,
+                                        showType: 1,
+                                      )),
+                            );
                           },
-                          state: snapShot.data,
+                          state: snapShot.data[0],
                           hasListTile: true,
                         ),
                       ]),
@@ -268,24 +266,54 @@ class ComicHomeViewState extends State<ComicHomeView> {
   Future getComicHomeData() async {
     try {
       print(Api.comicHome);
-      pageStateController.add(PageState.loading);
+      _stateList.fillRange(0, 3, PageState.loading);
+      pageStateController.add(_stateList);
       Response response = await Dio().get(Api.comicHome,
           options: Options(responseType: ResponseType.plain));
 
       if (response.statusCode == 200) {
         _list = recommendListFromMap(response.data);
+        //删除游戏广告
+        _list[0].data.removeWhere((element) => element.type == 10);
         refreshController.refreshCompleted();
-        pageStateController.add(PageState.done);
+        _stateList.fillRange(0, 3, PageState.done);
+        pageStateController.add(_stateList);
       } else {
         pageStateController.addError('statusCode:${response.statusCode}');
         refreshController.refreshFailed();
-        pageStateController.add(PageState.fail);
+        _stateList.fillRange(0, 3, PageState.fail);
+        pageStateController.add(_stateList);
       }
     } catch (e) {
       print(e);
       pageStateController.addError(e);
       refreshController.refreshFailed();
-      pageStateController.add(PageState.fail);
+      _stateList.fillRange(0, 3, PageState.fail);
+      pageStateController.add(_stateList);
+    }
+  }
+
+  Future getBatchUpdate(int categoryId, int stateIndex, int listIndex) async {
+    try {
+      _stateList[stateIndex] = PageState.loading;
+      pageStateController.add(_stateList);
+      Response response = await Dio().get(Api.comicHot(categoryId),
+          options: Options(responseType: ResponseType.plain));
+
+      if (response.statusCode == 200) {
+        _list[listIndex] = batchUpdateFromMap(response.data).data;
+        _stateList[stateIndex] = PageState.done;
+        pageStateController.add(_stateList);
+      } else {
+        pageStateController.addError('statusCode:${response.statusCode}');
+        _stateList[stateIndex] = PageState.fail;
+        pageStateController.add(_stateList);
+      }
+    } catch (e) {
+      print(e);
+      pageStateController.addError(e);
+      _stateList[stateIndex] = PageState.fail;
+      pageStateController.add(_stateList);
     }
   }
 }

@@ -41,6 +41,9 @@ dependencies:
   #变换动画
   animations: ^1.1.2
 
+  #工具合集
+  flustars: ^0.3.3
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2

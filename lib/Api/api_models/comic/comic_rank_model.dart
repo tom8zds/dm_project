@@ -20,7 +20,6 @@ class ComicRankItem {
     this.lastUpdatetime,
     this.lastUpdateChapterName,
     this.comicPy,
-    this.num,
     this.tagId,
   });
 
@@ -33,7 +32,6 @@ class ComicRankItem {
   final String lastUpdatetime;
   final String lastUpdateChapterName;
   final String comicPy;
-  final String num;
   final String tagId;
 
   factory ComicRankItem.fromMap(Map<String, dynamic> json) => ComicRankItem(
@@ -46,7 +44,6 @@ class ComicRankItem {
         lastUpdatetime: json["last_updatetime"],
         lastUpdateChapterName: json["last_update_chapter_name"],
         comicPy: json["comic_py"],
-        num: json["num"],
         tagId: json["tag_id"],
       );
 
@@ -60,7 +57,6 @@ class ComicRankItem {
         "last_updatetime": lastUpdatetime,
         "last_update_chapter_name": lastUpdateChapterName,
         "comic_py": comicPy,
-        "num": num,
         "tag_id": tagId,
       };
 }

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dm_project/Api/api.dart';
+import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -124,24 +125,11 @@ Widget coverButtonExtend(
                 case PageState.done:
                   return Row(
                     children: [
-                      order == -1
-                          ? Container()
-                          : Container(
-                              width: kToolbarHeight,
-                              child: Center(
-                                child: Text(
-                                  '$order',
-                                  style: Theme.of(context).textTheme.headline4,
-                                ),
-                              ),
-                            ),
-                      SizedBox(
-                        width: 8,
-                      ),
                       Container(
                         width: itemHeight * 0.75 - 12,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
+                            color: Theme.of(context).cardColor,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey,
@@ -162,37 +150,57 @@ Widget coverButtonExtend(
                       VerticalDivider(
                         width: margin * 2,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: Theme.of(context).textTheme.headline6,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            authors,
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                          Text(
-                            types,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                          Text(
-                            updateTime,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                          Text(
-                            updateChapter,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title ?? '',
+                              style: Theme.of(context).textTheme.headline6,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              authors ?? '',
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                            Text(
+                              types ?? '',
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Text(
+                              "更新于 " +
+                                      TimelineUtil.format(
+                                        int.parse(updateTime) * 1000,
+                                        locale: 'zh',
+                                      ) ??
+                                  '',
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Text(
+                              updateChapter ?? '',
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      order == -1
+                          ? Container()
+                          : Container(
+                              width: kToolbarHeight,
+                              child: Center(
+                                child: Text(
+                                  '$order',
+                                  style: Theme.of(context).textTheme.headline4,
+                                ),
+                              ),
+                            ),
+                      SizedBox(
+                        width: 8,
                       ),
                     ],
                   );
                 case PageState.loading:
-                  print('loading');
                   return Shimmer.fromColors(
                     baseColor: Colors.grey[300],
                     highlightColor: Colors.grey[100],

@@ -9,6 +9,35 @@ List<RecommendList> recommendListFromMap(String str) =>
 String recommendListToMap(List<RecommendList> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toMap())));
 
+BatchUpdate batchUpdateFromMap(String str) =>
+    BatchUpdate.fromMap(json.decode(str));
+
+String batchUpdateToMap(BatchUpdate data) => json.encode(data.toMap());
+
+class BatchUpdate {
+  BatchUpdate({
+    this.code,
+    this.msg,
+    this.data,
+  });
+
+  final int code;
+  final String msg;
+  final RecommendList data;
+
+  factory BatchUpdate.fromMap(Map<String, dynamic> json) => BatchUpdate(
+        code: json["code"],
+        msg: json["msg"],
+        data: RecommendList.fromMap(json["data"]),
+      );
+
+  Map<String, dynamic> toMap() => {
+        "code": code,
+        "msg": msg,
+        "data": data.toMap(),
+      };
+}
+
 class RecommendList {
   RecommendList({
     this.categoryId,
