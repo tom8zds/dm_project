@@ -141,6 +141,7 @@ class ComicRankViewState extends State<ComicRankView> {
                             padding: const EdgeInsets.all(8.0),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
+                                  isExpanded: true,
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
@@ -184,6 +185,7 @@ class ComicRankViewState extends State<ComicRankView> {
                             padding: const EdgeInsets.all(8.0),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
+                                  isExpanded: true,
                                   style: TextStyle(
                                       fontSize: Theme.of(context)
                                           .textTheme
@@ -200,15 +202,15 @@ class ComicRankViewState extends State<ComicRankView> {
                                   items: [
                                     DropdownMenuItem(
                                       value: 0,
-                                      child: Text('人气排行'),
+                                      child: Text('人气'),
                                     ),
                                     DropdownMenuItem(
                                       value: 1,
-                                      child: Text('吐槽排行'),
+                                      child: Text('吐槽'),
                                     ),
                                     DropdownMenuItem(
                                       value: 2,
-                                      child: Text('订阅排行'),
+                                      child: Text('订阅'),
                                     ),
                                   ]),
                             ),
@@ -257,12 +259,14 @@ class ComicRankViewState extends State<ComicRankView> {
 //Text("${_filterList[i].title}:\n${tagList[i].tagName}")
   Future onLoad() async {
     await getComicRankData(isRefresh: false);
-    refreshController.loadComplete();
   }
 
   Future getComicRankData({isRefresh = true}) async {
     try {
-      if (isRefresh) page = 0;
+      if (isRefresh) {
+        page = 0;
+        refreshController.resetNoData();
+      }
 
       if (page == 0) {
         pageStateController.add(PageState.loading);
@@ -274,6 +278,11 @@ class ComicRankViewState extends State<ComicRankView> {
 
       if (response.statusCode == 200) {
         if (isRefresh) _dataList = [];
+        List<ComicRankItem> temp = comicRankItemFromMap(response.data);
+        if (temp.isEmpty && !isRefresh) {
+          refreshController.loadNoData();
+          return;
+        }
         _dataList.addAll(comicRankItemFromMap(response.data));
         page += 1;
         pageStateController.add(PageState.done);
@@ -281,12 +290,20 @@ class ComicRankViewState extends State<ComicRankView> {
         pageStateController.addError('statusCode:${response.statusCode}');
         pageStateController.add(PageState.fail);
       }
-      refreshController.refreshCompleted();
+      if (isRefresh) {
+        refreshController.refreshCompleted();
+      } else {
+        refreshController.loadComplete();
+      }
     } catch (e) {
       print(e);
       pageStateController.addError(e);
       pageStateController.add(PageState.fail);
-      refreshController.refreshFailed();
+      if (isRefresh) {
+        refreshController.refreshFailed();
+      } else {
+        refreshController.loadFailed();
+      }
     }
   }
 

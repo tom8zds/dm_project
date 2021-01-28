@@ -61,7 +61,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                       toolbarHeight: kToolbarHeight,
                       title: Material(
                         elevation: 4,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(kToolbarHeight),
                         child: Container(
                           height: kToolbarHeight - 8,
                           padding: EdgeInsets.all(4),
@@ -82,8 +82,11 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                 Expanded(
                                   child: Container(),
                                 ),
-                                CircleAvatar(
-                                  child: Icon(Icons.perm_identity),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: CircleAvatar(
+                                    child: Icon(Icons.perm_identity),
+                                  ),
                                 ),
                               ],
                             ),

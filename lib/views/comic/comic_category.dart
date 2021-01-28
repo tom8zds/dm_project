@@ -110,7 +110,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                     Icons.list,
                     color: Theme.of(context).accentColor,
                   ),
-                  crossFadeState: orderType == 0
+                  crossFadeState: showType == 0
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
                   duration: Duration(milliseconds: 300),
@@ -140,9 +140,6 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
               shimmerCount =
                   MediaQuery.of(context).size.height ~/ listItemHeight;
             }
-
-            print(
-                '$itemWidth $oneLineCount ${MediaQuery.of(context).size.width}');
             return SafeArea(
               child: SmartRefresher(
                 physics: BouncingScrollPhysics(),
@@ -198,7 +195,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                                 cover: _dataList[i].cover,
                                 types: _dataList[i].types,
                                 margin: margin,
-                                itemHeight: itemHeight,
+                                itemHeight: 3 * kToolbarHeight,
                               );
                             },
                             childCount: _dataList == null
@@ -270,12 +267,14 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
 //Text("${_filterList[i].title}:\n${tagList[i].tagName}")
   Future onLoad() async {
     await getComicCategoryData(isRefresh: false);
-    refreshController.loadComplete();
   }
 
   Future getComicCategoryData({isRefresh = true}) async {
     try {
-      if (isRefresh) page = 0;
+      if (isRefresh) {
+        page = 0;
+        refreshController.resetNoData();
+      }
 
       if (page == 0) {
         pageStateController.add(PageState.loading);
@@ -288,19 +287,32 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
 
       if (response.statusCode == 200) {
         if (isRefresh) _dataList = [];
-        _dataList.addAll(comicCategoryItemFromMap(response.data));
+        List<ComicCategoryItem> temp = comicCategoryItemFromMap(response.data);
+        if (temp.isEmpty && !isRefresh) {
+          refreshController.loadNoData();
+          return;
+        }
+        _dataList.addAll(temp);
         page += 1;
         pageStateController.add(PageState.done);
       } else {
         pageStateController.addError('statusCode:${response.statusCode}');
         pageStateController.add(PageState.fail);
       }
-      refreshController.refreshCompleted();
+      if (isRefresh) {
+        refreshController.refreshCompleted();
+      } else {
+        refreshController.loadComplete();
+      }
     } catch (e) {
       print(e);
       pageStateController.addError(e);
       pageStateController.add(PageState.fail);
-      refreshController.refreshFailed();
+      if (isRefresh) {
+        refreshController.refreshFailed();
+      } else {
+        refreshController.loadFailed();
+      }
     }
   }
 

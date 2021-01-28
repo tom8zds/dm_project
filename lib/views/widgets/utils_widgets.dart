@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:dm_project/Api/api.dart';
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -169,12 +169,12 @@ Widget coverButtonExtend(
                               style: Theme.of(context).textTheme.bodyText1,
                             ),
                             Text(
-                              "更新于 " +
-                                      TimelineUtil.format(
-                                        int.parse(updateTime) * 1000,
-                                        locale: 'zh',
-                                      ) ??
-                                  '',
+                              updateTime.isNotEmpty
+                                  ? "更新于 ${TimelineUtil.format(
+                                      int.parse(updateTime) * 1000,
+                                      locale: 'zh',
+                                    )}"
+                                  : '',
                               style: Theme.of(context).textTheme.bodyText1,
                             ),
                             Text(
