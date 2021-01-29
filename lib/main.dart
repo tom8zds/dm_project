@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         noDataText: '后面没有了',
       ), // 配置默认底部指示器
       enableLoadingWhenFailed: true, //在加载失败的状态下,用户仍然可以通过手势上拉来触发加载更多
-      hideFooterWhenNotFull: true, // Viewport不满一屏时,禁用上拉加载更多功能
+      hideFooterWhenNotFull: false, // Viewport不满一屏时,禁用上拉加载更多功能
       enableBallisticLoad: false, // 可以通过惯性滑动触发加载更多
 
       child: MaterialApp(

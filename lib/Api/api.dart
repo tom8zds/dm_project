@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:convert/convert.dart';
+import 'package:dm_project/Api/api_models/comic/comic_collection_model.dart';
 
 enum PageState { loading, done, fail }
 
@@ -21,7 +22,7 @@ class Api {
   static String get novelHome =>
       '$apiHost/novel/recommend.json?$defaultParameter';
 
-  static String comicHot(int categoryId) {
+  static String comicBatchUpdate(int categoryId) {
     return "$apiHost/recommend/batchUpdate?category_id=$categoryId&$defaultParameter";
   }
 
@@ -59,6 +60,13 @@ class Api {
     }
     return api;
   }
+
+  //漫画专题
+  static String comicCollection(int page) =>
+      '$apiHost/subject/0/$page.json?$defaultParameter';
+
+  static String comicCollectionContent(int id) =>
+      '$apiHost/subject/$id.json?$defaultParameter';
 
   //用户相关
   static get loginV2 => "https://user.dmzj1.com/loginV2/m_confirm";

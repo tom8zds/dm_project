@@ -12,13 +12,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'comic_collection.dart';
+import 'comic_collection_content.dart';
+
 class ComicHomeView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => ComicHomeViewState();
 }
 
 class ComicHomeViewState extends State<ComicHomeView> {
-  List<RecommendList> _list = List.filled(9, null);
+  List<RecommendList> _list = List.filled(10, null);
 
   final StreamController pageStateController =
       StreamController<List<PageState>>();
@@ -60,6 +63,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                       backgroundColor: Colors.transparent,
                       toolbarHeight: kToolbarHeight,
                       title: Material(
+                        color: Theme.of(context).cardColor,
                         elevation: 4,
                         borderRadius: BorderRadius.circular(kToolbarHeight),
                         child: Container(
@@ -97,8 +101,8 @@ class ComicHomeViewState extends State<ComicHomeView> {
                     SliverToBoxAdapter(
                       child: RecommendListWidget(
                         list: _list[0],
-                        itemHeight: 3 * kToolbarHeight,
-                        itemWidth: 16 / 3 * kToolbarHeight,
+                        itemHeight: height,
+                        itemWidth: height * 2,
                         state: snapShot.data[0],
                       ),
                     ),
@@ -142,7 +146,14 @@ class ComicHomeViewState extends State<ComicHomeView> {
                                     icon: Icon(Icons.bar_chart),
                                     label: Text('排行')),
                                 TextButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ComicCollectionView()),
+                                      );
+                                    },
                                     icon: Icon(Icons.collections),
                                     label: Text('专题')),
                               ],
@@ -172,11 +183,14 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           title: _list[3]?.title,
                           list: _list[3],
                           itemHeight: height,
-                          itemWidth: height / 9 * 16,
+                          itemWidth: height * 2,
                           trailing: Icon(Icons.arrow_forward),
                           onTap: () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text('onTap')));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ComicCollectionView()),
+                            );
                           },
                           state: snapShot.data[0],
                           hasListTile: true,
@@ -208,7 +222,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           title: _list[8]?.title,
                           list: _list[8],
                           itemHeight: height,
-                          itemWidth: height * 16 / 9,
+                          itemWidth: height * 2,
                           state: snapShot.data[0],
                           hasListTile: true,
                         ),
@@ -230,7 +244,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
                           title: _list[6]?.title,
                           list: _list[6],
                           itemHeight: height,
-                          itemWidth: height * 16 / 9,
+                          itemWidth: height * 2,
                           onTap: null,
                           state: snapShot.data[0],
                           hasListTile: true,
@@ -300,7 +314,7 @@ class ComicHomeViewState extends State<ComicHomeView> {
     try {
       _stateList[stateIndex] = PageState.loading;
       pageStateController.add(_stateList);
-      Response response = await Dio().get(Api.comicHot(categoryId),
+      Response response = await Dio().get(Api.comicBatchUpdate(categoryId),
           options: Options(responseType: ResponseType.plain));
 
       if (response.statusCode == 200) {

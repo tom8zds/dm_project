@@ -24,7 +24,7 @@ class ComicCategoryView extends StatefulWidget {
 }
 
 class ComicCategoryViewState extends State<ComicCategoryView> {
-  List<ComicCategoryItem> _dataList = [];
+  List<ComicCategoryItem> _dataList;
   List<ComicCategoryFilter> _filterList;
   List<FilterTag> tagList = List.filled(4, null);
   int page = 0;
@@ -145,7 +145,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                 physics: BouncingScrollPhysics(),
                 enablePullUp: true,
                 onRefresh: getComicCategoryData,
-                onLoading: _dataList.isNotEmpty ? onLoad : null,
+                onLoading: _dataList != null ? onLoad : null,
                 controller: refreshController,
                 child: CustomScrollView(slivers: [
                   SliverAppBar(

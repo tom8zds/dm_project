@@ -14,17 +14,17 @@ class RecommendListWidget extends StatelessWidget {
   final bool hasListTile;
   final PageState state;
 
-  const RecommendListWidget(
-      {Key key,
-      this.itemHeight,
-      this.itemWidth,
-      this.onTap,
-      this.trailing,
-      this.hasListTile = false,
-      this.state,
-      this.list,
-      this.title})
-      : super(key: key);
+  const RecommendListWidget({
+    Key key,
+    this.itemHeight,
+    this.itemWidth,
+    this.onTap,
+    this.trailing,
+    this.hasListTile = false,
+    this.state,
+    this.list,
+    this.title,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +70,11 @@ class RecommendListWidget extends StatelessWidget {
         physics: BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: list == null ? 3 : list.data.length,
+        padding: EdgeInsets.only(left: margin),
         itemBuilder: (context, i) {
           if (list == null) {
             return coverButton(itemHeight, itemWidth, margin, context, state,
-                null, null, null, onTap);
+                null, null, null, null);
           }
           return coverButton(
               itemHeight,
@@ -84,7 +85,7 @@ class RecommendListWidget extends StatelessWidget {
               list?.data[i]?.title ?? list.data[i].status,
               list?.data[i]?.subTitle ?? list?.data[i]?.authors,
               list?.data[i]?.cover,
-              onTap);
+              () {});
         },
       ),
     );

@@ -103,7 +103,7 @@ Widget coverButtonExtend(
   BuildContext context,
   PageState state,
   Function onTap, {
-  double itemHeight = 3 * kToolbarHeight,
+  double itemHeight = 4 * kToolbarHeight,
   double margin = 8.0,
   String title = '',
   String types = '',
@@ -125,27 +125,31 @@ Widget coverButtonExtend(
                 case PageState.done:
                   return Row(
                     children: [
-                      Container(
-                        width: itemHeight * 0.75 - 12,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Theme.of(context).cardColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: margin / 2,
-                              )
-                            ],
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: CachedNetworkImageProvider(
-                                cover,
-                                headers: headers,
-                              ),
-                              onError: (exception, stackTrace) {
-                                print(exception);
-                              },
-                            )),
+                      AspectRatio(
+                        aspectRatio: 0.75,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Theme.of(context).cardColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context)
+                                      .shadowColor
+                                      .withOpacity(0.38),
+                                  blurRadius: margin,
+                                )
+                              ],
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: CachedNetworkImageProvider(
+                                  cover,
+                                  headers: headers,
+                                ),
+                                onError: (exception, stackTrace) {
+                                  print(exception);
+                                },
+                              )),
+                        ),
                       ),
                       VerticalDivider(
                         width: margin * 2,
@@ -160,26 +164,39 @@ Widget coverButtonExtend(
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              authors ?? '',
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            Text(
-                              types ?? '',
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                            Text(
-                              updateTime.isNotEmpty
-                                  ? "更新于 ${TimelineUtil.format(
-                                      int.parse(updateTime) * 1000,
-                                      locale: 'zh',
-                                    )}"
-                                  : '',
-                              style: Theme.of(context).textTheme.bodyText1,
-                            ),
-                            Text(
-                              updateChapter ?? '',
-                              style: Theme.of(context).textTheme.bodyText1,
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    authors ?? '',
+                                    style:
+                                        Theme.of(context).textTheme.subtitle1,
+                                  ),
+                                  Text(
+                                    types ?? '',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ),
+                                  Text(
+                                    updateTime.isNotEmpty
+                                        ? "更新于 ${TimelineUtil.format(
+                                            int.parse(updateTime) * 1000,
+                                            locale: 'zh',
+                                          )}"
+                                        : '',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ),
+                                  Text(
+                                    updateChapter ?? '',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

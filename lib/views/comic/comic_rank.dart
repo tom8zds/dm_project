@@ -18,7 +18,7 @@ class ComicRankView extends StatefulWidget {
 }
 
 class ComicRankViewState extends State<ComicRankView> {
-  List<ComicRankItem> _dataList = [];
+  List<ComicRankItem> _dataList;
   List<FilterTag> _tagList;
 
   FilterTag typeTag;
@@ -69,7 +69,7 @@ class ComicRankViewState extends State<ComicRankView> {
                 physics: BouncingScrollPhysics(),
                 enablePullUp: true,
                 onRefresh: getComicRankData,
-                onLoading: _dataList.isNotEmpty ? onLoad : null,
+                onLoading: _dataList != null ? onLoad : null,
                 controller: refreshController,
                 child: CustomScrollView(slivers: [
                   SliverAppBar(
@@ -226,12 +226,13 @@ class ComicRankViewState extends State<ComicRankView> {
                           context,
                           snapshot.data,
                           () {},
-                          title: _dataList[i].title,
-                          authors: _dataList[i].authors,
-                          cover: _dataList[i].cover,
-                          types: _dataList[i].types,
-                          updateTime: _dataList[i].lastUpdatetime,
-                          updateChapter: _dataList[i].lastUpdateChapterName,
+                          title: _dataList?.elementAt(i)?.title,
+                          authors: _dataList?.elementAt(i)?.authors,
+                          cover: _dataList?.elementAt(i)?.cover,
+                          types: _dataList?.elementAt(i)?.types,
+                          updateTime: _dataList?.elementAt(i)?.lastUpdatetime,
+                          updateChapter:
+                              _dataList?.elementAt(i)?.lastUpdateChapterName,
                           margin: margin,
                           itemHeight: itemHeight,
                           order: i + 1,
@@ -240,7 +241,7 @@ class ComicRankViewState extends State<ComicRankView> {
                       childCount:
                           _dataList == null ? shimmerCount : _dataList.length,
                     ),
-                    itemExtent: 3 * kToolbarHeight,
+                    itemExtent: 4 * kToolbarHeight,
                   )
                 ]),
               ),
@@ -283,7 +284,7 @@ class ComicRankViewState extends State<ComicRankView> {
           refreshController.loadNoData();
           return;
         }
-        _dataList.addAll(comicRankItemFromMap(response.data));
+        _dataList.addAll(temp);
         page += 1;
         pageStateController.add(PageState.done);
       } else {
