@@ -21,9 +21,9 @@ class BatchUpdate {
     this.data,
   });
 
-  final int code;
-  final String msg;
-  final RecommendList data;
+  final int? code;
+  final String? msg;
+  final RecommendList? data;
 
   factory BatchUpdate.fromMap(Map<String, dynamic> json) => BatchUpdate(
         code: json["code"],
@@ -34,7 +34,7 @@ class BatchUpdate {
   Map<String, dynamic> toMap() => {
         "code": code,
         "msg": msg,
-        "data": data.toMap(),
+        "data": data!.toMap(),
       };
 }
 
@@ -46,10 +46,10 @@ class RecommendList {
     this.data,
   });
 
-  final int categoryId;
-  final String title;
-  final int sort;
-  final List<RecommendListItem> data;
+  final int? categoryId;
+  final String? title;
+  final int? sort;
+  final List<RecommendListItem>? data;
 
   factory RecommendList.fromMap(Map<String, dynamic> json) => RecommendList(
         categoryId: json["category_id"],
@@ -63,7 +63,7 @@ class RecommendList {
         "category_id": categoryId,
         "title": title,
         "sort": sort,
-        "data": List<dynamic>.from(data.map((x) => x.toMap())),
+        "data": List<dynamic>.from(data!.map((x) => x.toMap())),
       };
 }
 
@@ -81,16 +81,16 @@ class RecommendListItem {
     this.authors,
   });
 
-  final String cover;
-  final String title;
-  final String subTitle;
-  final int type;
-  final String url;
-  final int objId;
-  final Status status;
-  final String isDot;
-  final int id;
-  final String authors;
+  final String? cover;
+  final String? title;
+  final String? subTitle;
+  final int? type;
+  final String? url;
+  final int? objId;
+  final Status? status;
+  final String? isDot;
+  final int? id;
+  final String? authors;
 
   factory RecommendListItem.fromMap(Map<String, dynamic> json) =>
       RecommendListItem(
@@ -113,9 +113,10 @@ class RecommendListItem {
         "type": type == null ? null : type,
         "url": url == null ? null : url,
         "obj_id": objId == null ? null : objId,
-        "status": statusValues.reverse[status],
+        "status": statusValues.reverse[status??"未知"],
         "is_dot": isDot == null ? null : isDot,
         "id": id == null ? null : id,
         "authors": authors == null ? null : authors,
       };
 }
+

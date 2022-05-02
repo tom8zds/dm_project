@@ -19,14 +19,14 @@ class ComicCollection {
     this.pageUrl,
   });
 
-  final int id;
-  final String title;
-  final String shortTitle;
-  final int createTime;
-  final String smallCover;
-  final int pageType;
-  final int sort;
-  final String pageUrl;
+  final int? id;
+  final String? title;
+  final String? shortTitle;
+  final int? createTime;
+  final String? smallCover;
+  final int? pageType;
+  final int? sort;
+  final String? pageUrl;
 
   factory ComicCollection.fromMap(Map<String, dynamic> json) => ComicCollection(
         id: json["id"],
@@ -67,12 +67,12 @@ class ComicCollectionContent {
     this.commentAmount,
   });
 
-  final String mobileHeaderPic;
-  final String title;
-  final String pageUrl;
-  final String description;
-  final List<CollectionItem> comics;
-  final int commentAmount;
+  final String? mobileHeaderPic;
+  final String? title;
+  final String? pageUrl;
+  final String? description;
+  final List<CollectionItem>? comics;
+  final int? commentAmount;
 
   factory ComicCollectionContent.fromMap(Map<String, dynamic> json) =>
       ComicCollectionContent(
@@ -89,7 +89,7 @@ class ComicCollectionContent {
         "title": title,
         "page_url": pageUrl,
         "description": description,
-        "comics": List<dynamic>.from(comics.map((x) => x.toMap())),
+        "comics": List<dynamic>.from(comics!.map((x) => x.toMap())),
         "comment_amount": commentAmount,
       };
 }
@@ -104,12 +104,12 @@ class CollectionItem {
     this.aliasName,
   });
 
-  final String cover;
-  final String recommendBrief;
-  final String recommendReason;
-  final int id;
-  final String name;
-  final String aliasName;
+  final String? cover;
+  final String? recommendBrief;
+  final String? recommendReason;
+  final int? id;
+  final String? name;
+  final String? aliasName;
 
   factory CollectionItem.fromMap(Map<String, dynamic> json) => CollectionItem(
         cover: json["cover"],

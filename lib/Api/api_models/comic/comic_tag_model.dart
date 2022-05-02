@@ -9,8 +9,8 @@ class FilterTag {
     this.tagName,
   });
 
-  final int tagId;
-  final String tagName;
+  final int? tagId;
+  final String? tagName;
 
   factory FilterTag.fromMap(Map<String, dynamic> json) => FilterTag(
         tagId: json["tag_id"],
