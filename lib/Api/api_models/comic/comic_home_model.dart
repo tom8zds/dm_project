@@ -96,27 +96,26 @@ class RecommendListItem {
       RecommendListItem(
         cover: json["cover"].replaceFirst('http:', 'https:'),
         title: json["title"],
-        subTitle: json["sub_title"] == null ? null : json["sub_title"],
-        type: json["type"] == null ? null : json["type"],
-        url: json["url"] == null ? null : json["url"],
-        objId: json["obj_id"] == null ? null : json["obj_id"],
+        subTitle: json["sub_title"],
+        type: json["type"],
+        url: json["url"],
+        objId: json["obj_id"],
         status: statusValues.map[json["status"]],
-        isDot: json["is_dot"] == null ? null : json["is_dot"],
-        id: json["id"] == null ? null : json["id"],
-        authors: json["authors"] == null ? null : json["authors"],
+        isDot: json["is_dot"],
+        id: json["id"],
+        authors: json["authors"],
       );
 
   Map<String, dynamic> toMap() => {
         "cover": cover,
         "title": title,
-        "sub_title": subTitle == null ? null : subTitle,
-        "type": type == null ? null : type,
-        "url": url == null ? null : url,
-        "obj_id": objId == null ? null : objId,
-        "status": statusValues.reverse[status??"未知"],
-        "is_dot": isDot == null ? null : isDot,
-        "id": id == null ? null : id,
-        "authors": authors == null ? null : authors,
+        "sub_title": subTitle,
+        "type": type,
+        "url": url,
+        "obj_id": objId,
+        "status": statusValues.reverse[status ?? "未知"],
+        "is_dot": isDot,
+        "id": id,
+        "authors": authors,
       };
 }
-

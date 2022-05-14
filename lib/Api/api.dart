@@ -6,8 +6,9 @@ import 'package:convert/convert.dart';
 enum PageState { loading, done, fail }
 
 class Api {
-  static final String apiHost = "https://nnv3api.muwai.com";
-  static final String version = "3.0.0";
+  static const String apiHost = "https://nnv3api.muwai.com";
+  static const String imgHost = "http://imgzip.muwai.com";
+  static const String version = "3.0.0";
   static String get timeStamp =>
       (DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0);
 
@@ -74,6 +75,19 @@ class Api {
   //漫画详情
   static String comicDetail(int comicId) {
     return "$apiHost/comic/comic_$comicId.json?${defaultParameter()}";
+  }
+
+  /*
+  Referer: http://images.muwai.com/\r\n
+  Host: imgzip.muwai.com\r\n
+  Connection: Keep-Alive\r\n
+  Accept-Encoding: gzip\r\n
+  User-Agent: okhttp/3.12.1
+   */
+  //漫画下载
+  static String comicDownload(
+      String comicFirstLetter, int comicId, int chapterId) {
+    return "$imgHost/$comicFirstLetter/$comicId/$chapterId.zip";
   }
 
   /// 轻小说详情
@@ -354,7 +368,7 @@ class Api {
 
   static String defaultParameter() {
     String channel = Platform.operatingSystem;
-    if(! (Platform.isAndroid || Platform.isIOS)){
+    if (!(Platform.isAndroid || Platform.isIOS)) {
       channel = "android";
     }
     return "channel=$channel&version$version&timestamp=$timeStamp";

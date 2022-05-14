@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:dmapicore/api/api_models/comic/comic_collection_model.dart';
+import 'package:dmapicore/internal/app_constants.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'api.dart';
 import 'api_models/comic/comic_category_model.dart';
 import 'api_models/comic/comic_home_model.dart';
@@ -10,17 +14,40 @@ import 'api_util.dart';
 import 'http_util.dart';
 
 class ComicApi {
-  static late ComicApi instance = ComicApi();
+  static ComicApi? _comicApi;
+  final Box apiBox = Hive.box(AppConstants.comicApiBoxKey);
 
-  ComicApi(){
-    print("new comic api instance");
-  }
+  static ComicApi get instance => _comicApi ??= ComicApi();
 
   //首页
   Future<List<RecommendList>> getHomeList() async {
     String? result = await HttpUtil.instance.httpGet(Api.comicRecommend);
     if (result != null) {
       List<RecommendList> data = recommendListFromMap(result);
+      return data;
+    } else {
+      throw AppError("发生错误");
+    }
+  }
+
+  //专栏
+  Future<ComicCollectionResponse> getCollectionList({int page = 0}) async {
+    String? result =
+        await HttpUtil.instance.httpGet(Api.comicCollection(page: page));
+    if (result != null) {
+      ComicCollectionResponse data = comicCollectionResponseFromMap(result);
+      return data;
+    } else {
+      throw AppError("发生错误");
+    }
+  }
+
+  //专栏内容
+  Future<ComicCollectionContent> getCollectionContent(int id) async {
+    String? result =
+        await HttpUtil.instance.httpGet(Api.comicCollectionContent(id));
+    if (result != null) {
+      ComicCollectionContent data = comicCollectionContentFromMap(result);
       return data;
     } else {
       throw AppError("发生错误");
@@ -79,23 +106,37 @@ class ComicApi {
 
   /// 漫画详情
   Future<ComicDetailInfoResponse> getDetail(int comicId) async {
-    var path = "${ApiUtil.BASE_URL_V4}/comic/detail/$comicId";
-    var result = await (HttpUtil.instance.httpGet(
-      path,
-      queryParameters: ApiUtil.defaultParameter(needLogined: true),
-    ));
-    var resultBytes = ApiUtil.decrypt(result!);
+    final path = "${ApiUtil.BASE_URL_V4}/comic/detail/$comicId";
+    final data;
+    try {
+      var result = await (HttpUtil.instance.httpGet(
+        path,
+        queryParameters: ApiUtil.defaultParameter(needLogined: true),
+      ));
+      var resultBytes = ApiUtil.decrypt(result!);
+      data = ComicDetailResponse.fromBuffer(resultBytes);
+    } on Exception {
+      try {
+        String? store = apiBox.get(path);
+        if (store == null) {
+          throw AppError("加载失败");
+        }
+        return ComicDetailInfoResponse.fromJson(store);
+      } on Exception {
+        throw AppError("加载失败");
+      }
+    }
 
-    var data = ComicDetailResponse.fromBuffer(resultBytes);
     if (data.errno != 0) {
       throw AppError(data.errmsg, code: data.errno);
     }
+    apiBox.put(path, data.data.writeToJson());
     return data.data;
   }
 
   /// 首页-排行榜
   Future<List<ComicRankListItemResponse>> getRankList(
-      {int tagId = 0, int byTime = 0, int? rankType, int page = 0}) async {
+      {int? tagId = 0, int? byTime = 0, int? rankType, int? page = 0}) async {
     var path = "${ApiUtil.BASE_URL_V4}/comic/rank/list";
     var par = ApiUtil.defaultParameter(needLogined: true);
     par.addAll({

@@ -1,5 +1,37 @@
 import 'dart:convert';
 
+ComicCollectionResponse comicCollectionResponseFromMap(String str) =>
+    ComicCollectionResponse.fromMap(json.decode(str));
+
+String comicCollectionResponseToMap(ComicCollectionResponse data) =>
+    json.encode(data.toMap());
+
+class ComicCollectionResponse {
+  ComicCollectionResponse({
+    required this.code,
+    required this.msg,
+    required this.data,
+  });
+
+  final int code;
+  final String msg;
+  final List<ComicCollection> data;
+
+  factory ComicCollectionResponse.fromMap(Map<String, dynamic> json) =>
+      ComicCollectionResponse(
+        code: json["code"],
+        msg: json["msg"],
+        data: List<ComicCollection>.from(
+            json["data"].map((x) => ComicCollection.fromMap(x))),
+      );
+
+  Map<String, dynamic> toMap() => {
+        "code": code,
+        "msg": msg,
+        "data": List<dynamic>.from(data.map((x) => x.toMap())),
+      };
+}
+
 List<ComicCollection> comicCollectionFromMap(String str) =>
     List<ComicCollection>.from(
         json.decode(str).map((x) => ComicCollection.fromMap(x)));
@@ -9,24 +41,24 @@ String comicCollectionToMap(List<ComicCollection> data) =>
 
 class ComicCollection {
   ComicCollection({
-    this.id,
-    this.title,
-    this.shortTitle,
-    this.createTime,
-    this.smallCover,
-    this.pageType,
-    this.sort,
-    this.pageUrl,
+    required this.id,
+    required this.title,
+    required this.shortTitle,
+    required this.createTime,
+    required this.smallCover,
+    required this.pageType,
+    required this.sort,
+    required this.pageUrl,
   });
 
-  final int? id;
-  final String? title;
-  final String? shortTitle;
-  final int? createTime;
-  final String? smallCover;
-  final int? pageType;
-  final int? sort;
-  final String? pageUrl;
+  final int id;
+  final String title;
+  final String shortTitle;
+  final int createTime;
+  final String smallCover;
+  final int pageType;
+  final int sort;
+  final String pageUrl;
 
   factory ComicCollection.fromMap(Map<String, dynamic> json) => ComicCollection(
         id: json["id"],
@@ -80,7 +112,8 @@ class ComicCollectionContent {
         title: json["title"],
         pageUrl: json["page_url"],
         description: json["description"],
-        comics: List<CollectionItem>.from(json["comics"].map((x) => CollectionItem.fromMap(x))),
+        comics: List<CollectionItem>.from(
+            json["comics"].map((x) => CollectionItem.fromMap(x))),
         commentAmount: json["comment_amount"],
       );
 
