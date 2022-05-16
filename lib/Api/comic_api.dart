@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dmapicore/api/api_models/comic/comic_collection_model.dart';
+import 'package:dmapicore/api/api_models/comic/reader/comic_chapter_model.dart';
 import 'package:dmapicore/internal/app_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -15,7 +17,7 @@ import 'http_util.dart';
 
 class ComicApi {
   static ComicApi? _comicApi;
-  final Box apiBox = Hive.box(AppConstants.comicApiBoxKey);
+  final Box apiBox = Hive.box(comicApiBoxKey);
 
   static ComicApi get instance => _comicApi ??= ComicApi();
 
@@ -117,11 +119,11 @@ class ComicApi {
       data = ComicDetailResponse.fromBuffer(resultBytes);
     } on Exception {
       try {
-        String? store = apiBox.get(path);
-        if (store == null) {
-          throw AppError("加载失败");
+        if (apiBox.containsKey(path)) {
+          return ComicDetailInfoResponse.fromJson(apiBox.get(path));
+
         }
-        return ComicDetailInfoResponse.fromJson(store);
+        throw AppError("加载失败");
       } on Exception {
         throw AppError("加载失败");
       }
@@ -132,6 +134,25 @@ class ComicApi {
     }
     apiBox.put(path, data.data.writeToJson());
     return data.data;
+  }
+
+  //章节内容
+  Future<ComicChapterData> getChapterData(int comicId, int chapterId,
+      {bool isWeb = true}) async {
+    String path = isWeb
+        ? Api.comicWebChapterDetail(comicId, chapterId)
+        : Api.comicChapterDetail(comicId, chapterId);
+    String? result = await HttpUtil.instance.httpGet(path);
+    if (result != null) {
+      ComicChapterData data = ComicChapterData.fromJson(json.decode(result));
+      apiBox.put(path, data.toJson());
+      return data;
+    } else {
+      if(apiBox.containsKey(path)){
+        return ComicChapterData.fromJson(apiBox.get(path));
+      }
+      throw AppError("获取失败");
+    }
   }
 
   /// 首页-排行榜

@@ -1,3 +1,4 @@
+import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/views/comic/comic_detail/comic_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,14 +30,14 @@ class ComicDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ComicDetailCubit, ComicDetailState>(
       builder: (context, state) {
-        if (state.status == ComicDetailStatus.initial) {
+        if (state.status == LoadStatus.initial) {
           context.read<ComicDetailCubit>().fetchDetail(comicId);
         }
         switch (state.status) {
-          case ComicDetailStatus.initial:
-          case ComicDetailStatus.loading:
+          case LoadStatus.initial:
+          case LoadStatus.loading:
             return const ComicDetailLoading();
-          case ComicDetailStatus.success:
+          case LoadStatus.success:
             return ComicDetailShow(
               detail: state.detail,
               onRefresh: () {
@@ -49,7 +50,7 @@ class ComicDetailView extends StatelessWidget {
                     .toggleShowSequence(index);
               },
             );
-          case ComicDetailStatus.failure:
+          case LoadStatus.failure:
           default:
             return const ComicDetailError();
         }

@@ -5,7 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class UserSettingRepo {
   final Box settingBox = Hive.box(_settingKey);
 
-  static const String _settingKey = AppConstants.settingBoxKey;
+  static const String _settingKey = settingBoxKey;
 
   static UserSettingRepo? _settingRepo;
 

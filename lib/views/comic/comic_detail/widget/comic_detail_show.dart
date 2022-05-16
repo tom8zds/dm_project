@@ -1,8 +1,11 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:dmapicore/api/api_models/protobuf/comic/detail_response.pb.dart';
+import 'package:dmapicore/internal/app_constants.dart';
+import 'package:dmapicore/model/comic/comic_volume_model.dart';
+import 'package:dmapicore/views/comic/comic_reader/comic_reader_page.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class ComicDetailShow extends StatelessWidget {
@@ -18,8 +21,6 @@ class ComicDetailShow extends StatelessWidget {
   final ValueGetter<Future<void>> onRefresh;
   final List<bool> showSequence;
   final ValueSetter<int> toggleSequence;
-
-  static const headers = {"Referer": "http://www.dmzj.com/"};
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,7 @@ class ComicDetailShow extends StatelessWidget {
                 clipBehavior: Clip.none,
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Container(
+                    child: SizedBox(
                       height: 160,
                       child: Container(
                         margin: const EdgeInsets.all(4),
@@ -57,9 +58,9 @@ class ComicDetailShow extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(16),
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: CachedNetworkImageProvider(
+                                    image: ExtendedNetworkImageProvider(
                                       detail.cover,
-                                      headers: headers,
+                                      headers: imgHeader,
                                     ),
                                     onError: (exception, stackTrace) {
                                       print(exception);
@@ -214,7 +215,23 @@ class ComicDetailShow extends StatelessWidget {
                                   chapters = detail.chapters[i].data;
                                 }
                                 return TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ComicVolume volume = ComicVolume(
+                                      comicId: detail.id,
+                                      comicTitle: detail.title,
+                                      volumeTitle: detail.chapters[i].title,
+                                      chapterList: detail.chapters[i].data,
+                                      firstLetter: detail.firstLetter,
+                                    );
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ComicReaderPage(
+                                          volume: volume,
+                                          initIndex: j,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   child: Text(
                                     chapters[j].chapterTitle,
                                     maxLines: 1,
@@ -230,7 +247,7 @@ class ComicDetailShow extends StatelessWidget {
                     }, childCount: detail.chapters.length),
                   ),
                   SliverToBoxAdapter(
-                    child: Container(
+                    child: SizedBox(
                       height: 100,
                       child: Center(
                         child: Text(

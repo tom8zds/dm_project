@@ -4,7 +4,7 @@ part 'comic_chapter_model.g.dart';
 
 @JsonSerializable()
 class ComicChapterData {
-  ComicChapterData({
+  const ComicChapterData({
     required this.chapterId,
     required this.comicId,
     required this.title,
@@ -14,6 +14,16 @@ class ComicChapterData {
     required this.picNum,
     required this.commentCount,
   });
+
+  static const empty = ComicChapterData(
+      chapterId: 0,
+      comicId: 0,
+      title: "",
+      chapterOrder: 0,
+      direction: 0,
+      pageUrl: [],
+      picNum: 0,
+      commentCount: 0);
 
   @JsonKey(name: "chapter_id")
   final int chapterId;
@@ -29,6 +39,27 @@ class ComicChapterData {
   final int picNum;
   @JsonKey(name: "comment_count")
   final int commentCount;
+
+  ComicChapterData copyWith({
+    int? chapterId,
+    int? comicId,
+    String? title,
+    int? chapterOrder,
+    int? direction,
+    List<String>? pageUrl,
+    int? picNum,
+    int? commentCount,
+  }) =>
+      ComicChapterData(
+        chapterId: chapterId ?? this.chapterId,
+        comicId: comicId ?? this.comicId,
+        title: title ?? this.title,
+        chapterOrder: chapterOrder ?? this.chapterOrder,
+        direction: direction ?? this.direction,
+        pageUrl: pageUrl ?? this.pageUrl,
+        picNum: picNum ?? this.picNum,
+        commentCount: commentCount ?? this.commentCount,
+      );
 
   factory ComicChapterData.fromJson(Map<String, dynamic> json) =>
       _$ComicChapterDataFromJson(json);

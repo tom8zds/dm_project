@@ -8,8 +8,8 @@ part of 'comic_detail_cubit.dart';
 
 ComicDetailState _$ComicDetailStateFromJson(Map<String, dynamic> json) =>
     ComicDetailState(
-      status: $enumDecodeNullable(_$ComicDetailStatusEnumMap, json['status']) ??
-          ComicDetailStatus.initial,
+      status: $enumDecodeNullable(_$LoadStatusEnumMap, json['status']) ??
+          LoadStatus.initial,
       detail: json['detail'] == null
           ? null
           : ComicDetailInfoResponse.fromJson(json['detail'] as String),
@@ -21,13 +21,13 @@ ComicDetailState _$ComicDetailStateFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ComicDetailStateToJson(ComicDetailState instance) =>
     <String, dynamic>{
       'detail': const ComicDetailConverter().toJson(instance.detail),
-      'status': _$ComicDetailStatusEnumMap[instance.status],
+      'status': _$LoadStatusEnumMap[instance.status],
       'showSequence': instance.showSequence,
     };
 
-const _$ComicDetailStatusEnumMap = {
-  ComicDetailStatus.initial: 'initial',
-  ComicDetailStatus.loading: 'loading',
-  ComicDetailStatus.success: 'success',
-  ComicDetailStatus.failure: 'failure',
+const _$LoadStatusEnumMap = {
+  LoadStatus.initial: 'initial',
+  LoadStatus.loading: 'loading',
+  LoadStatus.success: 'success',
+  LoadStatus.failure: 'failure',
 };

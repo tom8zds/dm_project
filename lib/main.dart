@@ -10,11 +10,10 @@ import 'views/home_page.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
-  await Hive.openBox(AppConstants.settingBoxKey);
-  await Hive.openBox(AppConstants.comicApiBoxKey);
+  await openBoxes();
   SystemUiOverlayStyle systemUiOverlayStyle = const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      );
+    statusBarColor: Colors.transparent,
+  );
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   runApp(
     MultiBlocProvider(
@@ -26,6 +25,12 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+Future<void> openBoxes() async {
+  for (var key in initBoxes) {
+    await Hive.openBox(key);
+  }
 }
 
 class MyApp extends StatelessWidget {

@@ -123,7 +123,6 @@ void main() {
     Box box = await Hive.openBox("test");
 
     ComicDownloader downloader = ComicDownloader(
-      box: box,
       onReceiveProgress: (received, total) {
         if (total != -1) {
           print('${(received / total * 100).floor()}%');
@@ -172,7 +171,7 @@ void main() {
   });
   test("chapter api test", () async {
     Hive.init("./test");
-    await Hive.openBox(AppConstants.comicApiBoxKey);
+    await Hive.openBox(comicApiBoxKey);
     int comicId = 40135;
     ComicDetailInfoResponse data = await ComicApi.instance.getDetail(comicId);
     expect(data, isNotNull);

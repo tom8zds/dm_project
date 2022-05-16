@@ -9,13 +9,16 @@ class Api {
   static const String apiHost = "https://nnv3api.muwai.com";
   static const String imgHost = "http://imgzip.muwai.com";
   static const String version = "3.0.0";
+
   static String get timeStamp =>
       (DateTime.now().millisecondsSinceEpoch / 1000).toStringAsFixed(0);
 
   static String get newsCategory =>
       "$apiHost/article/category.json?${defaultParameter()}";
+
   static String get newsBanner =>
       "$apiHost/v3/article/recommend/header.json?${defaultParameter()}";
+
   static String newsList(int id, {int page = 0}) {
     return "$apiHost/v3/article/list/$id/${id == 0 ? 2 : 3}/$page.json";
   }
@@ -47,6 +50,7 @@ class Api {
 
   //用户相关
   static String get loginV2 => "https://user.muwai.com/loginV2/m_confirm";
+
   static String userProfile(String uid, String token) {
     return "$apiHost/UCenter/comicsv2/$uid.json?dmzj_token=$token&${defaultParameter()}";
   }
@@ -58,15 +62,19 @@ class Api {
   /// 轻小说首页
   static String get novelRecommend =>
       "$apiHost/novel/recommend.json?${defaultParameter()}";
+
   //猜你喜欢
   static String get comicLike =>
       "$apiHost/recommend/batchUpdate?category_id=50&${defaultParameter()}";
+
   //刷新国漫
   static String get comicGuoman =>
       "$apiHost/recommend/batchUpdate?category_id=52&${defaultParameter()}";
+
   //刷新热门
   static String get comicHot =>
       "$apiHost/recommend/batchUpdate?category_id=54&${defaultParameter()}";
+
   //首页我的订阅
   static String comicMySub(String uid) {
     return "$apiHost/recommend/batchUpdate?uid=$uid&category_id=49&${defaultParameter()}";
@@ -375,7 +383,7 @@ class Api {
   }
 
   static String sign(String content, String mode) {
-    var _content = new Utf8Encoder().convert(mode + content);
-    return hex.encode(md5.convert(_content).bytes);
+    return hex
+        .encode(md5.convert(const Utf8Encoder().convert(mode + content)).bytes);
   }
 }

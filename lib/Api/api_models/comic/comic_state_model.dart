@@ -1,7 +1,7 @@
-enum Status { ONGOING, FINISH, NONE }
+enum Status { ongoing, finish, none }
 
 final statusValues = EnumValues(
-    {"连载中": Status.ONGOING, "已完结": Status.FINISH, "未知": Status.NONE});
+    {"连载中": Status.ongoing, "已完结": Status.finish, "未知": Status.none});
 
 class EnumValues<T> {
   Map<String, T> map;
