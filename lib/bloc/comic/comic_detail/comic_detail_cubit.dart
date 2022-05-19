@@ -3,11 +3,9 @@ import 'package:dmapicore/api/comic_api.dart';
 import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'comic_detail_state.dart';
-
 part 'comic_detail_cubit.g.dart';
 
 class ComicDetailCubit extends Cubit<ComicDetailState> {

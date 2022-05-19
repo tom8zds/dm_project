@@ -1,9 +1,9 @@
 import 'package:dmapicore/model/common/load_status_model.dart';
-import 'package:dmapicore/views/comic/comic_detail/comic_detail_cubit.dart';
+import 'package:dmapicore/bloc/comic/comic_detail/comic_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widget/comic_detail_show.dart';
+import 'comic_detail_show.dart';
 
 class ComicDetailPage extends StatelessWidget {
   final int comicId;

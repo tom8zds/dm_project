@@ -1,15 +1,8 @@
 part of 'app_config_cubit.dart';
 
-enum LoginState {
-  empty,
-  loading,
-  success,
-  failure,
-}
-
-extension ThemeModeX on ThemeMode{
-  String getTitle(){
-    switch(this){
+extension ThemeModeX on ThemeMode {
+  String getTitle() {
+    switch (this) {
       case ThemeMode.system:
         return "跟随系统";
       case ThemeMode.light:
@@ -18,8 +11,9 @@ extension ThemeModeX on ThemeMode{
         return "夜间模式";
     }
   }
-  IconData getIcon(){
-    switch(this){
+
+  IconData getIcon() {
+    switch (this) {
       case ThemeMode.system:
         return Icons.brightness_auto;
       case ThemeMode.light:
@@ -32,19 +26,25 @@ extension ThemeModeX on ThemeMode{
 
 class AppConfigState extends Equatable {
   final AppConfig appConfig;
-
-  final LoginState loginState;
+  final Iterable<DisplayMode> displayModeList;
+  final LoadStatus status;
 
   const AppConfigState(
-      {this.appConfig = const AppConfig(), this.loginState = LoginState.empty});
+      {this.appConfig = const AppConfig(),
+      this.status = LoadStatus.initial,
+      this.displayModeList = const Iterable.empty()});
 
-  AppConfigState copyWith({AppConfig? appConfig, LoginState? loginState}) {
+  AppConfigState copyWith(
+      {AppConfig? appConfig,
+      LoadStatus? status,
+      Iterable<DisplayMode>? displayModeList}) {
     return AppConfigState(
       appConfig: appConfig ?? this.appConfig,
-      loginState: loginState ?? this.loginState,
+      status: status ?? this.status,
+      displayModeList: displayModeList ?? this.displayModeList,
     );
   }
 
   @override
-  List<Object> get props => [appConfig, loginState];
+  List<Object> get props => [appConfig, status, displayModeList];
 }

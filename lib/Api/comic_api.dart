@@ -109,7 +109,7 @@ class ComicApi {
   /// 漫画详情
   Future<ComicDetailInfoResponse> getDetail(int comicId) async {
     final path = "${ApiUtil.BASE_URL_V4}/comic/detail/$comicId";
-    final data;
+    final ComicDetailResponse data;
     try {
       var result = await (HttpUtil.instance.httpGet(
         path,
@@ -121,7 +121,6 @@ class ComicApi {
       try {
         if (apiBox.containsKey(path)) {
           return ComicDetailInfoResponse.fromJson(apiBox.get(path));
-
         }
         throw AppError("加载失败");
       } on Exception {

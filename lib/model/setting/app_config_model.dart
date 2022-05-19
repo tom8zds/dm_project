@@ -1,15 +1,18 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'reader_config_model.dart';
-
+part 'display_mode_converter.dart';
 part 'app_config_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class AppConfig extends Equatable {
   final ComicReaderConfig comicReaderConfig;
   final NovelReaderConfig novelReaderConfig;
+  @DisplayModeConverter()
+  final DisplayMode displayMode;
   final ThemeMode themeMode;
   final int colorSeed;
   final String? username;
@@ -25,6 +28,7 @@ class AppConfig extends Equatable {
     this.novelReaderConfig = const NovelReaderConfig(),
     this.themeMode = ThemeMode.system,
     this.colorSeed = 0xff6750a4,
+    this.displayMode = DisplayMode.auto,
     this.username,
     this.password,
   });
@@ -34,6 +38,7 @@ class AppConfig extends Equatable {
       NovelReaderConfig? novelReaderConfig,
       ThemeMode? themeMode,
       int? colorSeed,
+      DisplayMode? displayMode,
       String? username,
       String? password}) {
     return AppConfig(
@@ -41,6 +46,7 @@ class AppConfig extends Equatable {
       novelReaderConfig: novelReaderConfig ?? this.novelReaderConfig,
       themeMode: themeMode ?? this.themeMode,
       colorSeed: colorSeed ?? this.colorSeed,
+      displayMode: displayMode ?? this.displayMode,
       username: username ?? this.username,
       password: password ?? this.password,
     );

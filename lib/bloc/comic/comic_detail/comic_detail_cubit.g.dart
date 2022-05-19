@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'comic_detail_cubit.dart';
+part of '../../../bloc/comic/comic_detail/comic_detail_cubit.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

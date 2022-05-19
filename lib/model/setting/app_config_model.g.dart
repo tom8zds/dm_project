@@ -18,13 +18,18 @@ AppConfig _$AppConfigFromJson(Map<String, dynamic> json) => AppConfig(
       themeMode: $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
           ThemeMode.system,
       colorSeed: json['colorSeed'] as int? ?? 0xff6750a4,
+      displayMode: json['displayMode'] == null
+          ? DisplayMode.auto
+          : const DisplayModeConverter()
+              .fromJson(json['displayMode'] as Map<String, dynamic>),
       username: json['username'] as String?,
       password: json['password'] as String?,
     );
 
 Map<String, dynamic> _$AppConfigToJson(AppConfig instance) => <String, dynamic>{
-      'comicReaderConfig': instance.comicReaderConfig,
-      'novelReaderConfig': instance.novelReaderConfig,
+      'comicReaderConfig': instance.comicReaderConfig.toJson(),
+      'novelReaderConfig': instance.novelReaderConfig.toJson(),
+      'displayMode': const DisplayModeConverter().toJson(instance.displayMode),
       'themeMode': _$ThemeModeEnumMap[instance.themeMode],
       'colorSeed': instance.colorSeed,
       'username': instance.username,

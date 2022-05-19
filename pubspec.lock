@@ -286,6 +286,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "8.0.1"
+  flutter_displaymode:
+    dependency: "direct main"
+    description:
+      name: flutter_displaymode
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -511,9 +518,11 @@ packages:
   photo_view:
     dependency: "direct main"
     description:
-      path: photo_view
-      relative: true
-    source: path
+      path: "."
+      ref: master
+      resolved-ref: "5c5fa6a2559114afc4a3505d8919b00f33156d01"
+      url: "https://github.com/tom8zds/photo_view.git"
+    source: git
     version: "0.13.0"
   platform:
     dependency: transitive

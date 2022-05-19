@@ -25,10 +25,13 @@ class ComicChapterData {
       picNum: 0,
       commentCount: 0);
 
+  @JsonKey(name: "id")
   @JsonKey(name: "chapter_id")
   final int chapterId;
   @JsonKey(name: "comic_id")
   final int comicId;
+  @JsonKey(name: "title")
+  @JsonKey(name: "chapter_name")
   final String title;
   @JsonKey(name: "chapter_order")
   final int chapterOrder;

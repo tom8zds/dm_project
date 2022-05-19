@@ -7,6 +7,7 @@ import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/views/widgets/comic_page_view.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -22,6 +23,12 @@ class ComicReaderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(0),
+        child: Container(
+          color: Colors.black,
+        ),
+      ),
       body: BlocProvider<ComicReaderCubit>(
         create: (_) => ComicReaderCubit(volume),
         child: BlocBuilder<ComicReaderCubit, ComicReaderState>(
@@ -58,19 +65,61 @@ class ComicReaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: ImageGalleryOne(
+    return Stack(
+      children: [
+        ImageGalleryOne(
           state: state,
         ),
-      ),
+        Positioned(
+          bottom: 0,
+          child: Container(
+            height: kToolbarHeight,
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Slider(
+                    value: state.progress.toDouble(),
+                    onChanged: (value) {
+                      context.read<ComicReaderCubit>().movePage(value.floor());
+                    },
+                    label: state.progress.toString(),
+                    min: 0,
+                    max: state.chapter.data.picNum - 1,
+                  ),
+                ),
+                Text(
+                    "${(state.progress + 1).floor()}/${state.chapter.data.picNum}"),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: kToolbarHeight,
+            child: GestureDetector(
+              onTap: context.read<ComicReaderCubit>().nextPage,
+            ),
+          ),
+        ),
+        Positioned(
+          left: 0,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: kToolbarHeight,
+            child: GestureDetector(
+              onTap: context.read<ComicReaderCubit>().lastPage,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
 class ImageGalleryOne extends StatelessWidget {
-  final PreloadPageController pageController = PreloadPageController();
-
   final ComicReaderState state;
 
   ImageGalleryOne({Key? key, required this.state}) : super(key: key);
@@ -78,7 +127,6 @@ class ImageGalleryOne extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ComicPageView.builder(
-      scrollPhysics: const BouncingScrollPhysics(),
       builder: (context, index) {
         final url = state.chapter.data.pageUrl.elementAt(index);
         return PhotoViewGalleryPageOptions(
@@ -107,14 +155,25 @@ class ImageGalleryOne extends StatelessWidget {
       gaplessPlayback: false,
       itemCount: state.chapter.data.picNum,
       loadingBuilder: (context, event) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        if (event == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          double progress =
+              (event.cumulativeBytesLoaded) / (event.expectedTotalBytes ?? 100);
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress,
+            ),
+          );
+        }
       },
       loadFailedChild: const Center(
         child: Text("出错啦"),
       ),
-      pageController: pageController,
+      onPageChanged: context.read<ComicReaderCubit>().onPageChange,
+      pageController: context.read<ComicReaderCubit>().pageController,
     );
   }
 }

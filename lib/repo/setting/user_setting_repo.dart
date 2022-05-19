@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dmapicore/internal/app_constants.dart';
 import 'package:dmapicore/model/setting/app_config_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,12 +16,18 @@ class UserSettingRepo {
   UserSettingRepo();
 
   AppConfig getUserData() {
-    Map<String, dynamic> json = settingBox.get(_settingKey);
-    if (json == null) {
-      settingBox.put(_settingKey, AppConfig().toJson());
-      return settingBox.get(_settingKey);
+    settingBox.delete(_settingKey);
+    if (settingBox.containsKey(_settingKey)) {
+      Map<String, dynamic> json = jsonDecode(settingBox.get(_settingKey));
+      return AppConfig.fromJson(json);
     }
-    return AppConfig.fromJson(json);
+    settingBox.put(
+      _settingKey,
+      jsonEncode(
+        const AppConfig().toJson(),
+      ),
+    );
+    return AppConfig.fromJson(jsonDecode(settingBox.get(_settingKey)));
   }
 
   void setUserData(AppConfig newData) {
