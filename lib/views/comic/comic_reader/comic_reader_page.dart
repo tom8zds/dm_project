@@ -1,17 +1,14 @@
-import 'dart:io';
 
 import 'package:dmapicore/bloc/comic/reader/comic_reader_cubit.dart';
 import 'package:dmapicore/internal/app_constants.dart';
-import 'package:dmapicore/model/comic/comic_volume_model.dart';
+import 'package:dmapicore/model/comic/comic_detail_model.dart';
 import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/views/widgets/comic_page_view.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 
 class ComicReaderPage extends StatelessWidget {
   final ComicVolume volume;
@@ -61,14 +58,41 @@ class ComicReaderPage extends StatelessWidget {
 class ComicReaderView extends StatelessWidget {
   final ComicReaderState state;
 
-  ComicReaderView({Key? key, required this.state}) : super(key: key);
+  const ComicReaderView({Key? key, required this.state}) : super(key: key);
+
+  Future<void> showActionDialog(BuildContext context) async {
+    await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: Text(state.chapter.data.title),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {},
+                child: const Text("刷新"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {},
+                child: const Text("保存"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {},
+                child: const Text("分享"),
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ImageGalleryOne(
-          state: state,
+        GestureDetector(
+          onLongPress: () async => showActionDialog(context),
+          child: ImageGalleryOne(
+            state: state,
+          ),
         ),
         Positioned(
           bottom: 0,
@@ -79,9 +103,12 @@ class ComicReaderView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Slider(
-                    value: state.progress.toDouble(),
+                    value: state.progress,
                     onChanged: (value) {
-                      context.read<ComicReaderCubit>().movePage(value.floor());
+                      context.read<ComicReaderCubit>().movePage(value);
+                    },
+                    onChangeEnd: (value) {
+                      context.read<ComicReaderCubit>().onPageChange(value.round());
                     },
                     label: state.progress.toString(),
                     min: 0,
@@ -89,7 +116,7 @@ class ComicReaderView extends StatelessWidget {
                   ),
                 ),
                 Text(
-                    "${(state.progress + 1).floor()}/${state.chapter.data.picNum}"),
+                    "${(state.progress.round() + 1)}/${state.chapter.data.picNum}"),
               ],
             ),
           ),
@@ -122,14 +149,14 @@ class ComicReaderView extends StatelessWidget {
 class ImageGalleryOne extends StatelessWidget {
   final ComicReaderState state;
 
-  ImageGalleryOne({Key? key, required this.state}) : super(key: key);
+  const ImageGalleryOne({Key? key, required this.state}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ComicPageView.builder(
       builder: (context, index) {
         final url = state.chapter.data.pageUrl.elementAt(index);
-        return PhotoViewGalleryPageOptions(
+        return PhotoViewGalleryPageOptions.customChild(
           filterQuality: FilterQuality.high,
           initialScale: PhotoViewComputedScale.contained,
           minScale: PhotoViewComputedScale.contained,
@@ -146,34 +173,63 @@ class ImageGalleryOne extends StatelessWidget {
                 return PhotoViewScaleState.initial;
             }
           },
-          imageProvider: ExtendedNetworkImageProvider(
-            url,
-            headers: imgHeader,
+          child: ComicPage(
+            url: url,
           ),
         );
       },
       gaplessPlayback: false,
       itemCount: state.chapter.data.picNum,
-      loadingBuilder: (context, event) {
-        if (event == null) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          double progress =
-              (event.cumulativeBytesLoaded) / (event.expectedTotalBytes ?? 100);
-          return Center(
-            child: CircularProgressIndicator(
-              value: progress,
-            ),
-          );
-        }
+      onPageChanged: (index) {
+        context.read<ComicReaderCubit>().onPageChange(index);
       },
-      loadFailedChild: const Center(
-        child: Text("出错啦"),
-      ),
-      onPageChanged: context.read<ComicReaderCubit>().onPageChange,
       pageController: context.read<ComicReaderCubit>().pageController,
+    );
+  }
+}
+
+class ComicPage extends StatelessWidget {
+  final String url;
+
+  const ComicPage({super.key, required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+      child: ExtendedImage.network(
+        url,
+        headers: imgHeader,
+        filterQuality: FilterQuality.high,
+        loadStateChanged: (state) {
+          switch (state.extendedImageLoadState) {
+            case LoadState.loading:
+              if (state.loadingProgress == null) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                double progress =
+                    (state.loadingProgress?.cumulativeBytesLoaded ?? 100) /
+                        (state.loadingProgress?.expectedTotalBytes ?? 100);
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: progress,
+                  ),
+                );
+              }
+            case LoadState.completed:
+              return state.completedWidget;
+            case LoadState.failed:
+              return Center(
+                child: IconButton(
+                  onPressed: state.reLoadImage,
+                  icon: const Icon(Icons.refresh),
+                ),
+              );
+          }
+        },
+      ),
     );
   }
 }

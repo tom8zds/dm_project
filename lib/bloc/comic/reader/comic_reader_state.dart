@@ -2,21 +2,23 @@ part of 'comic_reader_cubit.dart';
 
 class ComicReaderState extends Equatable {
   final ComicVolume volume;
-  final ComicChapter chapter;
+  final ComicReaderChapter chapter;
   final LoadStatus status;
-  final int progress;
+  final double progress;
 
   const ComicReaderState(
       {this.volume = ComicVolume.emtpy,
       this.status = LoadStatus.initial,
-      this.chapter = ComicChapter.empty,
+      this.chapter = ComicReaderChapter.empty,
       this.progress = 0});
+
+  int get page => progress.round();
 
   ComicReaderState copyWith(
       {ComicVolume? volume,
-      ComicChapter? chapter,
+        ComicReaderChapter? chapter,
       LoadStatus? status,
-      int? progress}) {
+      double? progress}) {
     return ComicReaderState(
         volume: volume ?? this.volume,
         chapter: chapter ?? this.chapter,

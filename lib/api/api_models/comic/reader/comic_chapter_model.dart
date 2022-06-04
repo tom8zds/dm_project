@@ -1,8 +1,30 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'comic_chapter_model.g.dart';
+ComicChapterData _$ComicChapterDataFromJson(Map<String, dynamic> json) =>
+    ComicChapterData(
+      chapterId: (json['chapter_id'] ?? json['id']) as int,
+      comicId: json['comic_id'] as int,
+      title: json['title'] ?? json['chapter_name'] as String,
+      chapterOrder: json['chapter_order'] as int,
+      direction: json['direction'] as int,
+      pageUrl:
+      (json['page_url'] as List<dynamic>).map((e) => e as String).toList(),
+      picNum: json['picnum'] as int,
+      commentCount: json['comment_count'] as int,
+    );
 
-@JsonSerializable()
+Map<String, dynamic> _$ComicChapterDataToJson(ComicChapterData instance) =>
+    <String, dynamic>{
+      'chapter_id': instance.chapterId,
+      'comic_id': instance.comicId,
+      'title': instance.title,
+      'chapter_order': instance.chapterOrder,
+      'direction': instance.direction,
+      'page_url': instance.pageUrl,
+      'picnum': instance.picNum,
+      'comment_count': instance.commentCount,
+    };
+
 class ComicChapterData {
   const ComicChapterData({
     required this.chapterId,
@@ -25,22 +47,13 @@ class ComicChapterData {
       picNum: 0,
       commentCount: 0);
 
-  @JsonKey(name: "id")
-  @JsonKey(name: "chapter_id")
   final int chapterId;
-  @JsonKey(name: "comic_id")
   final int comicId;
-  @JsonKey(name: "title")
-  @JsonKey(name: "chapter_name")
   final String title;
-  @JsonKey(name: "chapter_order")
   final int chapterOrder;
   final int direction;
-  @JsonKey(name: "page_url")
   final List<String> pageUrl;
-  @JsonKey(name: "picnum")
   final int picNum;
-  @JsonKey(name: "comment_count")
   final int commentCount;
 
   ComicChapterData copyWith({

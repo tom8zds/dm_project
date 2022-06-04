@@ -15,16 +15,17 @@ import 'package:dmapicore/api/api_models/comic/comic_collection_model.dart';
 import 'package:dmapicore/api/api_models/comic/comic_home_model.dart';
 import 'package:dmapicore/api/api_models/comic/reader/comic_chapter_model.dart';
 import 'package:dmapicore/api/api_models/comic/reader/comic_viewpoint_model.dart';
-import 'package:dmapicore/api/api_models/downloader/chunk_info.dart';
 import 'package:dmapicore/api/api_models/protobuf/comic/detail_response.pb.dart';
 import 'package:dmapicore/api/api_models/protobuf/comic/rank_list_response.pb.dart';
 import 'package:dmapicore/api/api_models/protobuf/comic/update_list_response.pb.dart';
 import 'package:dmapicore/api/api_models/user/user_login.dart';
 import 'package:dmapicore/api/comic_api.dart';
-import 'package:dmapicore/api/downloader.dart';
 import 'package:dmapicore/api/http_util.dart';
 import 'package:dmapicore/api/user_api.dart';
 import 'package:dmapicore/internal/app_constants.dart';
+import 'package:dmapicore/model/downloader/comic_download_model.dart';
+import 'package:flowder/flowder.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hive/hive.dart';
@@ -102,73 +103,6 @@ void main() {
     expect(data, isNotNull);
     print("detail api success");
   });
-  test("download api test", () async {
-    int comicId = 39472;
-    ComicDetailInfoResponse data = await ComicApi.instance.getDetail(comicId);
-    print(data.title);
-    print(data.firstLetter);
-    print(data.chapters.first.title);
-
-    int chapterId = data.chapters.first.data.first.chapterId;
-
-    String api = Api.comicDownload(data.firstLetter, data.id, chapterId);
-    print(api);
-
-    String path = "./test/$comicId/$chapterId/";
-
-    Hive.deleteFromDisk();
-    Hive.registerAdapter(MissionInfoAdapter());
-    Hive.registerAdapter(ChunkInfoAdapter());
-    Hive.init("./test");
-    Box box = await Hive.openBox("test");
-
-    ComicDownloader downloader = ComicDownloader(
-      onReceiveProgress: (received, total) {
-        if (total != -1) {
-          print('${(received / total * 100).floor()}%');
-        }
-      },
-      options: Options(
-        headers: {
-          "Referer": "http://images.muwai.com/",
-          "Host": "imgzip.muwai.com",
-          "Connection": "Keep-Alive",
-          "Accept-Encoding": "gzip",
-          "User-Agent": "okhttp/3.12.1",
-        },
-      ),
-    );
-
-    bool flag = await downloader.createMission(
-      api,
-      path,
-    );
-
-    expect(flag, true);
-
-    print("mission created");
-
-    List<MissionInfo> missionList = await downloader.missionDao.getAllMission();
-
-    expect(missionList[0], isNotNull);
-
-    print(missionList[0].toString());
-
-    flag = await downloader.downloadMission(api);
-
-    expect(flag, true);
-
-    Directory dir = Directory(path);
-
-    expect(dir.existsSync(), true);
-
-    print(dir.listSync());
-
-    Hive.close();
-    Hive.deleteFromDisk();
-
-    print("download api success");
-  });
   test("chapter api test", () async {
     Hive.init("./test");
     await Hive.openBox(comicApiBoxKey);
@@ -218,5 +152,27 @@ void main() {
     Hive.close();
     Hive.deleteFromDisk();
     print("hive api success");
+  });
+
+  test("flowder test", () async {
+    final progress = ProgressImplementation();
+    final file = File('./test/test.exe');
+    final downloaderUtils = DownloaderUtils(
+      progressCallback: (current, total) {
+        // final progress = ((current / total) * 100);
+        print('Downloading: $current , total: $total');
+      },
+      file: file,
+      progress: progress,
+      onDone: () => print('Download done'),
+      deleteOnCancel: false,
+    );
+    String url = 'https://mirrors.sdu.edu.cn/software/Windows/WePE/WePE64_V2.2.exe';
+    final core = await Flowder.download(
+        'https://mirrors.sdu.edu.cn/software/Windows/WePE/WePE64_V2.2.exe',
+        downloaderUtils);
+    await Future.delayed(Duration(seconds: 6));
+    await core.cancel();
+    print(await file.length());
   });
 }

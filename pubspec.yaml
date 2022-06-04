@@ -32,6 +32,8 @@ dependencies:
   #网络请求
   dio: ^4.0.6
   extended_image: ^6.2.0
+  flowder:
+    path: ../flowder
 
   #API封装方式
   protobuf: ^2.0.0
@@ -52,6 +54,7 @@ dependencies:
   hive: ^2.1.0
   hive_flutter: ^1.1.0
   path_provider: ^2.0.10
+  path: ^1.8.1
 
   #状态管理
   flutter_bloc: ^8.0.1
@@ -62,12 +65,18 @@ dependencies:
   json_annotation: ^4.4.0
   flutter_displaymode: ^0.4.0
 
+  #通知
+  flutter_local_notifications: ^10.0.0-dev.1
+  badges: ^2.0.3
+
+  #firebase
+  firebase_core: ^1.17.0
+  firebase_crashlytics: ^2.8.0
+
   #阅读器
   preload_page_view: ^0.1.4
   photo_view:
-    git:
-      url: https://github.com/tom8zds/photo_view.git
-      ref: master
+    path: ../photo_view
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

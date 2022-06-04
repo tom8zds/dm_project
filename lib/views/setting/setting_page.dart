@@ -1,5 +1,7 @@
 import 'package:dmapicore/bloc/setting/app_config_cubit.dart';
 import 'package:dmapicore/model/common/load_status_model.dart';
+import 'package:dmapicore/views/setting/download_page.dart';
+import 'package:dmapicore/views/setting/local_comic_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -81,6 +83,34 @@ class SettingPage extends StatelessWidget {
                           ))
                       .toList(),
                   onChanged: (DisplayMode? value) {},
+                ),
+              ),
+              ListTile(
+                title: const Text("下载列队"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => DownloadPage(),
+                    ),
+                  );
+                },
+                trailing: Icon(
+                  Icons.arrow_forward,
+                  color: Color(state.appConfig.colorSeed),
+                ),
+              ),
+              ListTile(
+                title: const Text("本地漫画"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LocalComicPage(),
+                    ),
+                  );
+                },
+                trailing: Icon(
+                  Icons.arrow_forward,
+                  color: Color(state.appConfig.colorSeed),
                 ),
               ),
             ],

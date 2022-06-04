@@ -10,6 +10,8 @@ import 'package:dmapicore/views/widgets/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'comic_detail/comic_detail_page.dart';
+
 class ComicCategoryView extends StatefulWidget {
   final int orderType;
   final int showType;
@@ -85,7 +87,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                   crossFadeState: orderType == 0
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                 ),
               ),
             ),
@@ -111,7 +113,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                   crossFadeState: showType == 0
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                 ),
               ),
             ),
@@ -140,7 +142,7 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
             }
             return SafeArea(
               child: SmartRefresher(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 enablePullUp: true,
                 onRefresh: getComicCategoryData,
                 onLoading: _dataList != null ? onLoad : null,
@@ -157,8 +159,15 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
                                 snapshot.data,
                                 _dataList?.elementAt(i).title,
                                 _dataList?.elementAt(i).authors,
-                                _dataList?.elementAt(i).cover,
-                                () {});
+                                _dataList?.elementAt(i).cover, () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ComicDetailPage(
+                                    comicId: _dataList!.elementAt(i).id!,
+                                  ),
+                                ),
+                              );
+                            });
                           },
                               childCount: _dataList == null
                                   ? 3 * oneLineCount
@@ -193,12 +202,12 @@ class ComicCategoryViewState extends State<ComicCategoryView> {
               ),
             );
           }
-          return LinearProgressIndicator();
+          return const LinearProgressIndicator();
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.search),
+        child: const Icon(Icons.search),
       ),
     );
   }

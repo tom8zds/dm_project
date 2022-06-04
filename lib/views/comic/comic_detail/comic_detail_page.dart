@@ -41,7 +41,7 @@ class ComicDetailView extends StatelessWidget {
             return ComicDetailShow(
               detail: state.detail,
               onRefresh: () {
-                return context.read<ComicDetailCubit>().refreshDetail();
+                return context.read<ComicDetailCubit>().fetchDetail(comicId);
               },
               showSequence: state.showSequence,
               toggleSequence: (int index) {

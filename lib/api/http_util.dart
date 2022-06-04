@@ -1,21 +1,25 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 
 class HttpUtil {
-  static late final HttpUtil instance = HttpUtil();
+  static HttpUtil get instance =>_httpUtil??=HttpUtil();
+  static HttpUtil? _httpUtil;
 
-  late Dio dio;
+  late final Dio dio;
 
   HttpUtil() {
-    print("http util init");
+    if (kDebugMode) {
+      print("http instance created");
+    }
     dio = Dio(
       BaseOptions(),
     );
   }
 
-  Future<String?> httpGet(
-    String url, {
+  Future<String?> httpGet(String url, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     bool needLogin = false,
@@ -42,8 +46,7 @@ class HttpUtil {
     }
   }
 
-  Future<String?> httpPost(
-    String url, {
+  Future<String?> httpPost(String url, {
     Map<String, dynamic>? queryParameters,
     dynamic data,
     Options? options,
@@ -74,8 +77,8 @@ class HttpUtil {
 
   Future httpDownload(String url, String path,
       {Map<String, dynamic>? queryParameters,
-      dynamic data,
-      Options? options}) async {
+        dynamic data,
+        Options? options}) async {
     dio.download(
       url,
       path,
@@ -182,12 +185,15 @@ class HttpUtil {
 
 class AppError implements Exception {
   final int? code;
+  final StackTrace? stack;
   final String message;
 
-  AppError(
-    this.message, {
+  AppError(this.message, {
     this.code,
-  });
+    this.stack,
+  }) {
+    FirebaseCrashlytics.instance.recordError(this, stack);
+  }
 
   @override
   String toString() {

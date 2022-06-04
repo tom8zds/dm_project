@@ -1,12 +1,15 @@
 import 'dart:ui';
 
+import 'package:badges/badges.dart';
 import 'package:common_utils/common_utils.dart';
-import 'package:dmapicore/api/api_models/protobuf/comic/detail_response.pb.dart';
+import 'package:dmapicore/bloc/downloader/comic_downloader_cubit.dart';
 import 'package:dmapicore/internal/app_constants.dart';
-import 'package:dmapicore/model/comic/comic_volume_model.dart';
+import 'package:dmapicore/model/comic/comic_detail_model.dart';
+import 'package:dmapicore/model/downloader/comic_download_model.dart';
 import 'package:dmapicore/views/comic/comic_reader/comic_reader_page.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ComicDetailShow extends StatelessWidget {
   const ComicDetailShow(
@@ -17,17 +20,59 @@ class ComicDetailShow extends StatelessWidget {
       required this.toggleSequence})
       : super(key: key);
 
-  final ComicDetailInfoResponse detail;
+  final ComicDetail detail;
   final ValueGetter<Future<void>> onRefresh;
   final List<bool> showSequence;
   final ValueSetter<int> toggleSequence;
+
+  void _routeToReader(ComicVolume volume, BuildContext context, int index) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ComicReaderPage(
+          volume: volume,
+          initIndex: index,
+        ),
+      ),
+    );
+  }
+
+  void _showDialog(ComicChapter chapter, BuildContext context) async {
+    await showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: Text(chapter.chapterTitle),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  final info = MissionBindInfo(
+                      comicId: detail.comicId,
+                      comicTitle: detail.comicTitle,
+                      cover: detail.cover,
+                      chapterId: chapter.chapterId,
+                      chapterTitle: chapter.chapterTitle,
+                      order: chapter.order);
+                  context
+                      .read<ComicDownloaderCubit>()
+                      .createMission(detail.firstLetter, info);
+                },
+                child: const Text("添加到下载列队"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {},
+                child: const Text("标记为已读"),
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text(detail.title),
+          title: Text(detail.comicTitle),
         ),
         body: Stack(
           fit: StackFit.expand,
@@ -77,7 +122,7 @@ class ComicDetailShow extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    detail.title,
+                                    detail.comicTitle,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.textTheme.headline4,
@@ -89,7 +134,7 @@ class ComicDetailShow extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    '''最后更新 ${DateUtil.formatDateMs(detail.lastUpdatetime.toInt() * 1000, format: "yyyy-MM-dd")}''',
+                                    '''最后更新 ${DateUtil.formatDateMs(detail.lastUpdateTime * 1000, format: "yyyy-MM-dd")}''',
                                   ),
                                 ],
                               ),
@@ -161,6 +206,14 @@ class ComicDetailShow extends StatelessWidget {
                   ),
                   SliverList(
                     delegate: SliverChildBuilderDelegate((context, i) {
+                      final List<ComicChapter> chapters;
+                      if (showSequence[i]) {
+                        chapters =
+                            detail.volumes[i].chapterList.reversed.toList();
+                      } else {
+                        chapters = detail.volumes[i].chapterList;
+                      }
+                      final volume = detail.volumes[i];
                       return Container(
                         margin: const EdgeInsets.all(4),
                         padding: const EdgeInsets.all(8),
@@ -172,7 +225,7 @@ class ComicDetailShow extends StatelessWidget {
                           children: [
                             ListTile(
                               title: Text(
-                                detail.chapters[i].title,
+                                detail.volumes[i].volumeTitle,
                                 style: theme.textTheme.headline6,
                               ),
                               trailing: AnimatedCrossFade(
@@ -207,44 +260,37 @@ class ComicDetailShow extends StatelessWidget {
                                 crossAxisSpacing: 4,
                               ),
                               itemBuilder: (ctx, j) {
-                                final chapters;
-                                if (showSequence[i]) {
-                                  chapters =
-                                      detail.chapters[i].data.reversed.toList();
-                                } else {
-                                  chapters = detail.chapters[i].data;
-                                }
+                                final chapter = volume.chapterList[j];
                                 return TextButton(
-                                  onPressed: () {
-                                    ComicVolume volume = ComicVolume(
-                                      comicId: detail.id,
-                                      comicTitle: detail.title,
-                                      volumeTitle: detail.chapters[i].title,
-                                      chapterList: detail.chapters[i].data,
-                                      firstLetter: detail.firstLetter,
-                                    );
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => ComicReaderPage(
-                                          volume: volume,
-                                          initIndex: j,
-                                        ),
+                                  onPressed: () =>
+                                      _routeToReader(volume, context, j),
+                                  onLongPress: () =>
+                                      _showDialog(chapter, context),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        chapters[j].chapterTitle,
+                                        maxLines: 1,
                                       ),
-                                    );
-                                  },
-                                  child: Text(
-                                    chapters[j].chapterTitle,
-                                    maxLines: 1,
-                                    textAlign: TextAlign.center,
+                                      chapter.isLocal
+                                          ? Icon(
+                                              Icons.file_download_done,
+                                              size: 14,
+                                            )
+                                          : Container()
+                                    ],
                                   ),
                                 );
                               },
-                              itemCount: detail.chapters[i].data.length,
+                              itemCount: detail.volumes[i].chapterList.length,
                             ),
                           ],
                         ),
                       );
-                    }, childCount: detail.chapters.length),
+                    }, childCount: detail.volumes.length),
                   ),
                   SliverToBoxAdapter(
                     child: SizedBox(

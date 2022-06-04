@@ -1,12 +1,11 @@
-import 'package:bloc/bloc.dart';
-import 'package:dmapicore/api/api_models/protobuf/comic/detail_response.pb.dart';
-import 'package:dmapicore/model/comic/comic_volume_model.dart';
+import 'package:dmapicore/model/comic/comic_detail_model.dart';
+import 'package:dmapicore/model/comic/comic_reader_chapter_model.dart';
 import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/repo/comic/comic_chapter_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/animation.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 part 'comic_reader_state.dart';
@@ -18,41 +17,39 @@ class ComicReaderCubit extends Cubit<ComicReaderState> {
   final repo = ComicChapterRepo();
   final PreloadPageController pageController = PreloadPageController();
 
-  void movePage(int page) {
-    if (page < 0 ||
-        page > state.chapter.data.picNum - 1 ||
-        page == state.progress) {
-      return;
+  void movePage(double progress) {
+    final page = progress.round();
+    if (page >= 0 && page < state.chapter.data.picNum && page != state.page) {
+      pageController.jumpToPage(page);
     }
-    pageController.jumpToPage(page);
-    emit(state.copyWith(progress: page));
+    emit(state.copyWith(progress: progress));
   }
 
   void nextPage() {
-    final page = state.progress + 1;
+    final page = state.page + 1;
     if (page < 0 || page > state.chapter.data.picNum - 1) {
       return;
     }
     pageController.animateToPage(page,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-    emit(state.copyWith(progress: page));
+    emit(state.copyWith(progress: page.toDouble()));
   }
 
   void lastPage() {
-    final page = state.progress - 1;
+    final page = state.page - 1;
     if (page < 0 || page > state.chapter.data.picNum - 1) {
       return;
     }
     pageController.animateToPage(page,
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
-    emit(state.copyWith(progress: page));
+    emit(state.copyWith(progress: page.toDouble()));
   }
 
   void onPageChange(int? page) {
     if (page == null || page < 0 || page > state.chapter.data.picNum) {
       return;
     }
-    emit(state.copyWith(progress: page));
+    emit(state.copyWith(progress: page.toDouble()));
   }
 
   @override
@@ -71,10 +68,10 @@ class ComicReaderCubit extends Cubit<ComicReaderState> {
     final chapterInfo = state.volume.chapterList.elementAt(index);
     emit(state.copyWith(status: LoadStatus.loading));
     try {
-      ComicChapter chapter = await repo.getComicChapter(
+      ComicReaderChapter chapter = await repo.getComicChapter(
           state.volume.firstLetter,
           state.volume.comicId,
-          chapterInfo.chapterId);
+          chapterInfo);
       emit(state.copyWith(chapter: chapter, status: LoadStatus.success));
     } on Exception {
       emit(state.copyWith(status: LoadStatus.failure));

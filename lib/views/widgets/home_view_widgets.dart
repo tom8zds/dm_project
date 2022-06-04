@@ -46,7 +46,7 @@ class RecommendListWidget extends StatelessWidget {
                 ? Shimmer.fromColors(
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
-                    child: SizedBox(height: 18, width: 3 * kToolbarHeight),
+                    child: const SizedBox(height: 18, width: 3 * kToolbarHeight),
                   )
                 : Text(
                     title!,
@@ -65,7 +65,7 @@ class RecommendListWidget extends StatelessWidget {
       height: itemHeight,
       child: ListView.builder(
         itemExtent: itemWidth,
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: list == null ? 3 : list!.data!.length,
         itemBuilder: (context, i) {
