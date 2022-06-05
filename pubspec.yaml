@@ -59,6 +59,9 @@ dependencies:
   #状态管理
   flutter_bloc: ^8.0.1
 
+  #Material you
+  dynamic_color: ^1.4.0
+
   #工具
   common_utils: ^2.1.0
   equatable: ^2.0.3

@@ -24,6 +24,7 @@ AppConfig _$AppConfigFromJson(Map<String, dynamic> json) => AppConfig(
               .fromJson(json['displayMode'] as Map<String, dynamic>),
       username: json['username'] as String?,
       password: json['password'] as String?,
+      isSysColor: json['isSysColor'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$AppConfigToJson(AppConfig instance) => <String, dynamic>{
@@ -31,6 +32,7 @@ Map<String, dynamic> _$AppConfigToJson(AppConfig instance) => <String, dynamic>{
       'novelReaderConfig': instance.novelReaderConfig.toJson(),
       'displayMode': const DisplayModeConverter().toJson(instance.displayMode),
       'themeMode': _$ThemeModeEnumMap[instance.themeMode],
+      'isSysColor': instance.isSysColor,
       'colorSeed': instance.colorSeed,
       'username': instance.username,
       'password': instance.password,

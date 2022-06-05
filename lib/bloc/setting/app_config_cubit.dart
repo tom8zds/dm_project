@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/model/setting/app_config_model.dart';
 import 'package:dmapicore/repo/setting/user_setting_repo.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -9,13 +12,16 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 part 'app_config_state.dart';
 
 class AppConfigCubit extends Cubit<AppConfigState> {
-  AppConfigCubit() : super(AppConfigState(appConfig: UserSettingRepo.instance.getUserData()));
+  AppConfigCubit()
+      : super(
+            AppConfigState(appConfig: UserSettingRepo.instance.getUserData()));
 
   Future<void> fetchData() async {
     emit(state.copyWith(status: LoadStatus.loading));
     try {
       final List<DisplayMode> modeList = await checkRefreshRate();
       final DisplayMode m = await FlutterDisplayMode.active;
+      await handleThemeColor();
       emit(
         state.copyWith(
           displayModeList: modeList,
@@ -75,5 +81,64 @@ class AppConfigCubit extends Cubit<AppConfigState> {
   void changeColorSeed(int colorSeed) {
     emit(state.copyWith(
         appConfig: state.appConfig.copyWith(colorSeed: colorSeed)));
+  }
+
+  Future toggleThemeColorMode() async {
+    emit(
+      state.copyWith(
+        appConfig:
+            state.appConfig.copyWith(isSysColor: !state.appConfig.isSysColor),
+      ),
+    );
+    await handleThemeColor();
+  }
+
+  Future handleThemeColor() async {
+    if (!state.appConfig.isSysColor) {
+      final systemLightScheme = ColorScheme.fromSeed(
+        seedColor: Color(state.appConfig.colorSeed),
+      );
+      final systemDarkScheme = ColorScheme.fromSeed(
+        seedColor: Color(state.appConfig.colorSeed),
+        brightness: Brightness.dark,
+      );
+      emit(
+        state.copyWith(
+          appDarkScheme: systemDarkScheme,
+          appLightScheme: systemLightScheme,
+        ),
+      );
+      return;
+    }
+    if (Platform.isAndroid) {
+      final systemCorePalette = await DynamicColorPlugin.getCorePalette();
+      if (systemCorePalette != null) {
+        final systemLightScheme = systemCorePalette.toColorScheme();
+        final systemDarkScheme = systemCorePalette.toColorScheme(brightness: Brightness.dark);
+        emit(
+          state.copyWith(
+            appDarkScheme: systemDarkScheme,
+            appLightScheme: systemLightScheme,
+          ),
+        );
+      }
+    } else {
+      final systemColor = await DynamicColorPlugin.getAccentColor();
+      if (systemColor != null) {
+        final systemLightScheme = ColorScheme.fromSeed(
+          seedColor: systemColor,
+        );
+        final systemDarkScheme = ColorScheme.fromSeed(
+          seedColor: systemColor,
+          brightness: Brightness.dark,
+        );
+        emit(
+          state.copyWith(
+            appDarkScheme: systemDarkScheme,
+            appLightScheme: systemLightScheme,
+          ),
+        );
+      }
+    }
   }
 }

@@ -28,23 +28,31 @@ class AppConfigState extends Equatable {
   final AppConfig appConfig;
   final Iterable<DisplayMode> displayModeList;
   final LoadStatus status;
+  final ColorScheme? appLightScheme;
+  final ColorScheme? appDarkScheme;
 
-  const AppConfigState(
-      {this.appConfig = const AppConfig(),
-      this.status = LoadStatus.initial,
-      this.displayModeList = const Iterable.empty()});
-
-  AppConfigState copyWith(
-      {AppConfig? appConfig,
-      LoadStatus? status,
-      Iterable<DisplayMode>? displayModeList}) {
-    return AppConfigState(
-      appConfig: appConfig ?? this.appConfig,
-      status: status ?? this.status,
-      displayModeList: displayModeList ?? this.displayModeList,
-    );
-  }
+  const AppConfigState({this.appConfig = const AppConfig(),
+    this.status = LoadStatus.initial,
+    this.displayModeList = const Iterable.empty(),
+    this.appLightScheme, this.appDarkScheme});
 
   @override
-  List<Object> get props => [appConfig, status, displayModeList];
+  List<Object?> get props =>
+      [appConfig, displayModeList, status, appLightScheme, appDarkScheme,];
+
+  AppConfigState copyWith({
+    AppConfig? appConfig,
+    Iterable<DisplayMode>? displayModeList,
+    LoadStatus? status,
+    ColorScheme? appLightScheme,
+    ColorScheme? appDarkScheme,
+  }) {
+    return AppConfigState(
+      appConfig: appConfig ?? this.appConfig,
+      displayModeList: displayModeList ?? this.displayModeList,
+      status: status ?? this.status,
+      appLightScheme: appLightScheme ?? this.appLightScheme,
+      appDarkScheme: appDarkScheme ?? this.appDarkScheme,
+    );
+  }
 }

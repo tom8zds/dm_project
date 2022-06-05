@@ -42,35 +42,59 @@ class SettingPage extends StatelessWidget {
               ),
               ListTile(
                 title: const Text("主题颜色"),
-                trailing: Icon(
-                  Icons.color_lens_outlined,
-                  color: Color(state.appConfig.colorSeed),
+                trailing: TextButton(
+                  child: state.appConfig.isSysColor
+                      ? Icon(
+                          Icons.hdr_auto,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : Icon(
+                          Icons.color_lens_outlined,
+                          color: Color(state.appConfig.colorSeed),
+                        ),
+                  onPressed: () {
+                    context.read<AppConfigCubit>().toggleThemeColorMode();
+                  },
                 ),
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 160,
                 margin: const EdgeInsets.all(4),
-                child: ListView.builder(
-                  cacheExtent: MediaQuery.of(context).size.width,
-                  controller: scrollController,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    final color = Colors.primaries.elementAt(index);
-                    return ThemePresent(
-                      colorSeed: color,
-                      brightness: theme.brightness,
-                      selected: color.value == state.appConfig.colorSeed,
-                      onTap: (colorSeed) {
-                        context
-                            .read<AppConfigCubit>()
-                            .changeColorSeed(colorSeed);
-                      },
-                    );
-                  },
-                  itemCount: Colors.primaries.length,
-                ),
+                child: state.appConfig.isSysColor
+                    ? Center(
+                        child: ThemePresent(
+                          lightScheme: state.appLightScheme!,
+                          darkScheme: state.appDarkScheme!,
+                          brightness: theme.brightness,
+                          selected: true,
+                          onTap: () {},
+                        ),
+                      )
+                    : ListView.builder(
+                        cacheExtent: MediaQuery.of(context).size.width,
+                        controller: scrollController,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final color = Colors.primaries.elementAt(index);
+                          return ThemePresent(
+                            lightScheme: ColorScheme.fromSeed(
+                              seedColor: color,
+                            ),
+                            darkScheme: ColorScheme.fromSeed(
+                                seedColor: color, brightness: Brightness.dark),
+                            brightness: theme.brightness,
+                            selected: color.value == state.appConfig.colorSeed,
+                            onTap: () {
+                              context
+                                  .read<AppConfigCubit>()
+                                  .changeColorSeed(color.value);
+                            },
+                          );
+                        },
+                        itemCount: Colors.primaries.length,
+                      ),
               ),
               ListTile(
                 title: const Text("显示模式"),
@@ -122,35 +146,31 @@ class SettingPage extends StatelessWidget {
 }
 
 class ThemePresent extends StatelessWidget {
-  final Color colorSeed;
+  final ColorScheme lightScheme;
+  final ColorScheme darkScheme;
   final Brightness brightness;
   final bool selected;
-  final ValueSetter<int> onTap;
+  final VoidCallback onTap;
 
-  const ThemePresent(
-      {Key? key,
-      required this.colorSeed,
-      required this.selected,
-      required this.onTap,
-      required this.brightness})
-      : super(key: key);
+  const ThemePresent({
+    Key? key,
+    required this.lightScheme,
+    required this.darkScheme,
+    required this.selected,
+    required this.onTap,
+    required this.brightness,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = brightness == Brightness.light
         ? ThemeData.light().copyWith(
             useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: colorSeed,
-              brightness: Brightness.light,
-            ),
+            colorScheme: lightScheme,
           )
         : ThemeData.dark().copyWith(
             useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: colorSeed,
-              brightness: Brightness.dark,
-            ),
+            colorScheme: darkScheme,
           );
     return Material(
       child: Ink(
@@ -164,7 +184,7 @@ class ThemePresent extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
             splashColor: theme.colorScheme.surfaceVariant,
-            onTap: () => onTap(colorSeed.value),
+            onTap: () => onTap(),
             child: Ink(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),

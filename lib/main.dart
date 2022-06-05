@@ -99,7 +99,7 @@ class MyApp extends StatelessWidget {
               themeMode: state.appConfig.themeMode,
               theme: ThemeData.light().copyWith(
                 useMaterial3: true,
-                colorScheme: ColorScheme.fromSeed(
+                colorScheme: state.appLightScheme ?? ColorScheme.fromSeed(
                   seedColor: Color(
                     state.appConfig.colorSeed,
                   ),
@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
               ),
               darkTheme: ThemeData.dark().copyWith(
                 useMaterial3: true,
-                colorScheme: ColorScheme.fromSeed(
+                colorScheme: state.appDarkScheme ?? ColorScheme.fromSeed(
                   seedColor: Color(state.appConfig.colorSeed),
                   brightness: Brightness.dark,
                 ),
