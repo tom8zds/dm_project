@@ -10,6 +10,20 @@ const List<String> initBoxes = [
   localComicBoxKey,
 ];
 
+const themeColors = [
+  0xff6750a4,
+  0xFFF44336,
+  0xFF2196F3,
+  0xFFFCC9B9,
+];
+
+const themeColorNames = [
+  "质感基准",
+  "根正苗红",
+  "海天一色",
+  "樱",
+];
+
 const imgHeader = {"Referer": "http://www.dmzj.com/"};
 const firstChunkSize = 102;
 // 4M

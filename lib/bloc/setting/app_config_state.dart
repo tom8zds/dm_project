@@ -30,11 +30,14 @@ class AppConfigState extends Equatable {
   final LoadStatus status;
   final ColorScheme? appLightScheme;
   final ColorScheme? appDarkScheme;
+  final ColorScheme? sysLightScheme;
+  final ColorScheme? sysDarkScheme;
+  final String themeName;
 
   const AppConfigState({this.appConfig = const AppConfig(),
     this.status = LoadStatus.initial,
     this.displayModeList = const Iterable.empty(),
-    this.appLightScheme, this.appDarkScheme});
+    this.appLightScheme, this.appDarkScheme,this.sysLightScheme, this.sysDarkScheme, this.themeName = ""});
 
   @override
   List<Object?> get props =>
@@ -46,6 +49,9 @@ class AppConfigState extends Equatable {
     LoadStatus? status,
     ColorScheme? appLightScheme,
     ColorScheme? appDarkScheme,
+    ColorScheme? sysLightScheme,
+    ColorScheme? sysDarkScheme,
+    String? themeName,
   }) {
     return AppConfigState(
       appConfig: appConfig ?? this.appConfig,
@@ -53,6 +59,9 @@ class AppConfigState extends Equatable {
       status: status ?? this.status,
       appLightScheme: appLightScheme ?? this.appLightScheme,
       appDarkScheme: appDarkScheme ?? this.appDarkScheme,
+      sysLightScheme: sysLightScheme ?? this.sysLightScheme,
+      sysDarkScheme: sysDarkScheme ?? this.sysDarkScheme,
+      themeName: themeName ?? this.themeName,
     );
   }
 }

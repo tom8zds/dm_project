@@ -1,6 +1,8 @@
 import 'package:dmapicore/bloc/setting/app_config_cubit.dart';
 import 'package:dmapicore/model/comic/comic_local_model.dart';
+import 'package:dmapicore/model/common/load_status_model.dart';
 import 'package:dmapicore/model/downloader/comic_download_model.dart';
+import 'package:dmapicore/repo/setting/user_setting_repo.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -92,8 +94,13 @@ class MyApp extends StatelessWidget {
       // 可以通过惯性滑动触发加载更多
 
       child: BlocConsumer<AppConfigCubit, AppConfigState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            UserSettingRepo.instance.setUserData(state.appConfig);
+          },
           builder: (context, state) {
+            if (state.status.isInitial) {
+              context.read<AppConfigCubit>().fetchData();
+            }
             return MaterialApp(
               title: 'Flutter Demo',
               themeMode: state.appConfig.themeMode,

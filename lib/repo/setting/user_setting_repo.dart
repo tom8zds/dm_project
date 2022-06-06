@@ -16,7 +16,6 @@ class UserSettingRepo {
   UserSettingRepo();
 
   AppConfig getUserData() {
-    settingBox.delete(_settingKey);
     if (settingBox.containsKey(_settingKey)) {
       Map<String, dynamic> json = jsonDecode(settingBox.get(_settingKey));
       return AppConfig.fromJson(json);
@@ -31,6 +30,6 @@ class UserSettingRepo {
   }
 
   void setUserData(AppConfig newData) {
-    settingBox.put(_settingKey, newData.toJson());
+    settingBox.put(_settingKey, jsonEncode(newData.toJson()));
   }
 }
